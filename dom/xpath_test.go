@@ -1588,3 +1588,180 @@ func TestUnionDoesNotAffectPredicates(t *testing.T) {
 		t.Errorf("Expected 1 node, got %d - | in string should not be treated as union", len(nodes))
 	}
 }
+
+func TestXPathLocationPathInFunction(t *testing.T) {
+	// Create test tree
+	root := &Node{
+		Name: "root",
+		Children: []*Node{
+			{
+				Name:  "article",
+				Attrs: map[string]*string{"id": strPtr("a1")},
+				Children: []*Node{
+					{Name: "p", Children: []*Node{{Name: "#text", Data: "Para 1"}}},
+					{Name: "p", Children: []*Node{{Name: "#text", Data: "Para 2"}}},
+				},
+			},
+			{
+				Name:  "article",
+				Attrs: map[string]*string{"id": strPtr("a2")},
+				Children: []*Node{
+					{Name: "p", Children: []*Node{{Name: "#text", Data: "Para 3"}}},
+				},
+			},
+			{
+				Name:  "article",
+				Attrs: map[string]*string{"id": strPtr("a3")},
+				Children: []*Node{
+					{Name: "div", Children: []*Node{
+						{Name: "p", Children: []*Node{{Name: "#text", Data: "Nested"}}},
+					}},
+				},
+			},
+		},
+	}
+	setParents(root)
+
+	// Test count(.//p) - count all descendant p elements
+	nodes, err := root.QueryXPath("//article[count(.//p) > 1]")
+	if err != nil {
+		t.Fatalf("QueryXPath error: %v", err)
+	}
+	if len(nodes) != 1 {
+		t.Errorf("Expected 1 article with > 1 descendant p, got %d", len(nodes))
+	}
+	if len(nodes) > 0 && nodes[0].Attr("id") != "a1" {
+		t.Errorf("Expected article a1, got %s", nodes[0].Attr("id"))
+	}
+
+	// Debug: Test if p works directly (without count)
+	// Article a1 should have 2 direct p children
+	a1, err := root.QueryXPathFirst("//article[@id='a1']")
+	if err != nil || a1 == nil {
+		t.Fatalf("Could not find article a1")
+	}
+	directChildren, err := a1.QueryXPath("p")
+	if err != nil {
+		t.Fatalf("p query error: %v", err)
+	}
+	t.Logf("Direct p children of a1: %d", len(directChildren))
+
+	// Test count(p) - count direct children (p is equivalent to child::p)
+	nodes, err = root.QueryXPath("//article[count(p) = 2]")
+	if err != nil {
+		t.Fatalf("QueryXPath error: %v", err)
+	}
+	t.Logf("Articles with count(p)=2: %d", len(nodes))
+	if len(nodes) != 1 {
+		t.Errorf("Expected 1 article with 2 child p elements, got %d", len(nodes))
+	}
+}
+
+func TestXPathLocationChildPathInFunction(t *testing.T) {
+	// Create test tree
+	root := &Node{
+		Name: "root",
+		Children: []*Node{
+			{
+				Name:  "article",
+				Attrs: map[string]*string{"id": strPtr("a1")},
+				Children: []*Node{
+					{Name: "p", Children: []*Node{{Name: "#text", Data: "Para 1"}}},
+					{Name: "p", Children: []*Node{{Name: "#text", Data: "Para 2"}}},
+				},
+			},
+			{
+				Name:  "article",
+				Attrs: map[string]*string{"id": strPtr("a2")},
+				Children: []*Node{
+					{Name: "p", Children: []*Node{{Name: "#text", Data: "Para 3"}}},
+				},
+			},
+			{
+				Name:  "article",
+				Attrs: map[string]*string{"id": strPtr("a3")},
+				Children: []*Node{
+					{Name: "div", Children: []*Node{
+						{Name: "p", Children: []*Node{{Name: "#text", Data: "Nested"}}},
+					}},
+				},
+			},
+		},
+	}
+	setParents(root)
+
+	// Test count(.//p) - count all descendant p elements
+	nodes, err := root.QueryXPath("//article[count(.//p) > 1]")
+	if err != nil {
+		t.Fatalf("QueryXPath error: %v", err)
+	}
+	if len(nodes) != 1 {
+		t.Errorf("Expected 1 article with > 1 descendant p, got %d", len(nodes))
+	}
+	if len(nodes) > 0 && nodes[0].Attr("id") != "a1" {
+		t.Errorf("Expected article a1, got %s", nodes[0].Attr("id"))
+	}
+
+	// Debug: Test if child::p works in main parser
+	directChildAxis, err := root.QueryXPath("//article[@id='a1']/child::p")
+	if err != nil {
+		t.Fatalf("child::p in main parser error: %v", err)
+	}
+	t.Logf("Main parser child::p results: %d", len(directChildAxis))
+
+	// Debug: Test if p works directly (without count)
+	// Article a1 should have 2 direct p children
+	a1, err := root.QueryXPathFirst("//article[@id='a1']")
+	if err != nil || a1 == nil {
+		t.Fatalf("Could not find article a1")
+	}
+	directChildren, err := a1.QueryXPath("p")
+	if err != nil {
+		t.Fatalf("p query error: %v", err)
+	}
+	t.Logf("Direct p children of a1: %d", len(directChildren))
+
+	// Debug: Test if child::p works when called directly on a node
+	childAxisDirect, err := a1.QueryXPath("child::p")
+	if err != nil {
+		t.Fatalf("a1.QueryXPath('child::p') error: %v", err)
+	}
+	t.Logf("a1.QueryXPath('child::p') results: %d", len(childAxisDirect))
+
+	// Debug: Manually test what count(child::p) returns for a1
+	// Create a predicate parser and evaluate it with a1 as context
+	testPred := "[count(child::p)]"
+	content := testPred[1 : len(testPred)-1]
+	pred, err := parseXPathPredicate(content)
+	if err != nil {
+		t.Fatalf("Failed to parse test predicate: %v", err)
+	}
+
+	// Evaluate with a1 as one of the nodes
+	testNodes := []*Node{a1}
+	resultNodes, err := pred.filter(testNodes, root)
+	if err != nil {
+		t.Fatalf("Failed to filter: %v", err)
+	}
+	t.Logf("Nodes after filter with [count(child::p)]: %d (should be 1 if count returns 2)", len(resultNodes))
+
+	// Test count(p) - count direct children (p is equivalent to child::p)
+	nodes, err = root.QueryXPath("//article[count(p) = 2]")
+	if err != nil {
+		t.Fatalf("QueryXPath error: %v", err)
+	}
+	t.Logf("Articles with count(p)=2: %d", len(nodes))
+	if len(nodes) != 1 {
+		t.Errorf("Expected 1 article with 2 child p elements, got %d", len(nodes))
+	}
+
+	// Test count(child::p) - explicit axis syntax
+	nodes, err = root.QueryXPath("//article[count(child::p) = 2]")
+	if err != nil {
+		t.Fatalf("count(child::p) error: %v", err)
+	}
+	t.Logf("Articles with count(child::p)=2: %d", len(nodes))
+	if len(nodes) != 1 {
+		t.Errorf("Expected 1 article with count(child::p)=2, got %d", len(nodes))
+	}
+}

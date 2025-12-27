@@ -550,6 +550,38 @@ func parseNodeTest(selector string, start int) (string, xpathNodeTest, int, erro
 	return name, xpathNodeTestName, end, nil
 }
 
+func parseXPathName(selector string, start int) (string, int, error) {
+	if start >= len(selector) {
+		return "", 0, XPathError{"missing xpath node test"}
+	}
+
+	if selector[start] == '.' {
+		if start+1 < len(selector) && selector[start+1] == '.' {
+			return "..", start + 2, nil
+		}
+		return ".", start + 1, nil
+	}
+
+	if selector[start] == '*' {
+		return "*", start + 1, nil
+	}
+
+	end := start
+	for end < len(selector) {
+		ch := selector[end]
+		if ch == '/' || ch == '[' {
+			break
+		}
+		end++
+	}
+
+	name := strings.TrimSpace(selector[start:end])
+	if name == "" {
+		return "", 0, XPathError{"missing xpath node test"}
+	}
+	return name, end, nil
+}
+
 func readXPathBracket(selector string, start int) (string, int, error) {
 	depth := 0
 	quote := byte(0)
@@ -649,7 +681,7 @@ func applyXPathAxis(nodes []*Node, axis xpathAxis, nodeTest xpathNodeTest, name 
 			// (Can't return actual attribute nodes with []*Node return type)
 			if name == "*" {
 				// All attributes
-				if len(n.Attrs) > 0 {
+				if n.Attrs != nil && len(n.Attrs) > 0 {
 					out = append(out, n)
 				}
 			} else {
@@ -895,6 +927,22 @@ func followingSiblingNodes(node *Node, test string) []xpathNode {
 		if matchesXPathName(siblings[i], test) {
 			out = append(out, newNodeValue(siblings[i]))
 		}
+	}
+	return out
+}
+
+func uniqueNodes(nodes []*Node) []*Node {
+	seen := make(map[*Node]struct{}, len(nodes))
+	out := make([]*Node, 0, len(nodes))
+	for _, n := range nodes {
+		if n == nil {
+			continue
+		}
+		if _, ok := seen[n]; ok {
+			continue
+		}
+		seen[n] = struct{}{}
+		out = append(out, n)
 	}
 	return out
 }
@@ -1455,6 +1503,50 @@ func (e xpathSelfExpr) eval(ctx xpathContext) (xpathValue, error) {
 	return xpathValue{kind: xpathValueNodeSet, nodes: []xpathNode{newNodeValue(ctx.node)}}, nil
 }
 
+// xpathLocationPathExpr represents a location path used as an expression
+// For example: count(.//p) or id(//div/@ref)
+type xpathLocationPathExpr struct {
+	path string // The location path string
+}
+
+func (e xpathLocationPathExpr) eval(ctx xpathContext) (xpathValue, error) {
+	// Parse and execute the location path from the current context node
+	if ctx.node == nil {
+		return xpathValue{kind: xpathValueNodeSet}, nil
+	}
+
+	// For relative paths, we need to evaluate from the context node
+	// Paths like "child::p", "./div", ".//p" are relative
+	var nodes []*Node
+	var err error
+
+	if strings.HasPrefix(e.path, "/") {
+		// Absolute path - find root and query from there
+		root := ctx.node
+		for root.Parent != nil {
+			root = root.Parent
+		}
+		nodes, err = root.QueryXPath(e.path)
+	} else {
+		// Relative path - query from context node
+		// For paths starting with ".", we can query directly
+		// For axis paths like "child::p", they work from the context node
+		nodes, err = ctx.node.QueryXPath(e.path)
+	}
+
+	if err != nil {
+		return xpathValue{}, err
+	}
+
+	// Convert []*Node to []xpathNode
+	xnodes := make([]xpathNode, len(nodes))
+	for i, n := range nodes {
+		xnodes[i] = newNodeValue(n)
+	}
+
+	return xpathValue{kind: xpathValueNodeSet, nodes: xnodes}, nil
+}
+
 type xpathExprParser struct {
 	lexer *xpathLexer
 	curr  xpathToken
@@ -1651,9 +1743,26 @@ func (p *xpathExprParser) parsePrimary() (xpathExpr, error) {
 			}
 			return xpathFunctionExpr{name: name, args: args}, nil
 		}
+
+		// Check if this is an axis specifier (followed by ::)
+		if p.curr.typ == xpathTokenOperator && p.curr.val == "::" {
+			// This is a location path like "child::p" or "descendant::div"
+			p.next() // consume ::
+			return p.parseLocationPathExpr(name + "::")
+		}
+
 		return xpathNameExpr{name: name}, nil
 	case xpathTokenDot:
+		// Check if this is followed by / or // to make it a location path
 		p.next()
+		if p.curr.typ == xpathTokenOperator && (p.curr.val == "/" || p.curr.val == "//") {
+			// This is a location path like ".//p" or "./span"
+			// Build the start including the operator
+			op := p.curr.val
+			p.next()
+			return p.parseLocationPathExpr("." + op)
+		}
+		// Just a self reference
 		return xpathSelfExpr{}, nil
 	case xpathTokenLParen:
 		p.next()
@@ -1667,6 +1776,85 @@ func (p *xpathExprParser) parsePrimary() (xpathExpr, error) {
 		return expr, nil
 	default:
 		return nil, XPathError{"invalid xpath predicate"}
+	}
+}
+
+// parseLocationPathExpr parses a location path expression when used inside a predicate/function
+// startToken is the token we've already consumed (like "." or an axis name)
+func (p *xpathExprParser) parseLocationPathExpr(startToken string) (xpathExpr, error) {
+	// Since the lexer doesn't tokenize brackets, we need a simpler approach:
+	// Just consume tokens until we hit a clear delimiter
+	var pathBuilder strings.Builder
+	pathBuilder.WriteString(startToken)
+
+	// Keep consuming tokens that are part of the location path
+	for {
+		switch p.curr.typ {
+		case xpathTokenEOF:
+			return xpathLocationPathExpr{path: pathBuilder.String()}, nil
+
+		case xpathTokenComma:
+			// End of location path
+			return xpathLocationPathExpr{path: pathBuilder.String()}, nil
+
+		case xpathTokenRParen:
+			// End of location path (closing the function call)
+			return xpathLocationPathExpr{path: pathBuilder.String()}, nil
+
+		case xpathTokenOperator:
+			op := p.curr.val
+
+			// Path operators - always include
+			if op == "/" || op == "//" || op == "::" {
+				pathBuilder.WriteString(op)
+				p.next()
+			} else if op == "=" || op == "!=" || op == "<" || op == ">" ||
+				op == "<=" || op == ">=" || op == "+" || op == "-" ||
+				op == "*" || op == "div" || op == "mod" ||
+				op == "and" || op == "or" || op == "|" {
+				// These operators end the location path
+				return xpathLocationPathExpr{path: pathBuilder.String()}, nil
+			} else {
+				// Unknown operator - end path
+				return xpathLocationPathExpr{path: pathBuilder.String()}, nil
+			}
+
+		case xpathTokenIdentifier:
+			pathBuilder.WriteString(p.curr.val)
+			p.next()
+
+		case xpathTokenAt:
+			pathBuilder.WriteString("@")
+			p.next()
+
+		case xpathTokenDot:
+			pathBuilder.WriteString(".")
+			p.next()
+
+		case xpathTokenNumber:
+			pathBuilder.WriteString(p.curr.val)
+			p.next()
+
+		case xpathTokenString:
+			// Include quotes
+			pathBuilder.WriteString("'")
+			pathBuilder.WriteString(p.curr.val)
+			pathBuilder.WriteString("'")
+			p.next()
+
+		case xpathTokenLParen:
+			pathBuilder.WriteString("(")
+			p.next()
+			// Check if this is immediately followed by ) for node tests
+			if p.curr.typ == xpathTokenRParen {
+				pathBuilder.WriteString(")")
+				p.next()
+			}
+
+		default:
+			// Unknown token - end location path
+			return xpathLocationPathExpr{path: pathBuilder.String()}, nil
+		}
 	}
 }
 
@@ -1748,7 +1936,7 @@ func (l *xpathLexer) nextToken() xpathToken {
 	case ',':
 		l.pos++
 		return xpathToken{typ: xpathTokenComma, val: ","}
-	case '!', '=', '<', '>', '+', '-', '*', '|':
+	case '!', '=', '<', '>', '+', '-', '*', '|', '/', ':':
 		return l.readOperator()
 	case '"', '\'':
 		return l.readString()
@@ -1769,17 +1957,36 @@ func (l *xpathLexer) readOperator() xpathToken {
 	start := l.pos
 	ch := l.input[l.pos]
 	l.pos++
+
+	// Handle // (double slash)
+	if ch == '/' && l.pos < len(l.input) && l.input[l.pos] == '/' {
+		l.pos++
+		return xpathToken{typ: xpathTokenOperator, val: "//"}
+	}
+
+	// Handle <= and >=
 	if (ch == '<' || ch == '>') && l.pos < len(l.input) && l.input[l.pos] == '=' {
 		l.pos++
 		return xpathToken{typ: xpathTokenOperator, val: l.input[start:l.pos]}
 	}
+
+	// Handle !=
 	if ch == '!' && l.pos < len(l.input) && l.input[l.pos] == '=' {
 		l.pos++
 		return xpathToken{typ: xpathTokenOperator, val: "!="}
 	}
-	if ch == '=' || ch == '<' || ch == '>' || ch == '+' || ch == '-' || ch == '*' || ch == '|' {
+
+	// Handle :: (double colon for axes)
+	if ch == ':' && l.pos < len(l.input) && l.input[l.pos] == ':' {
+		l.pos++
+		return xpathToken{typ: xpathTokenOperator, val: "::"}
+	}
+
+	// Single character operators
+	if ch == '=' || ch == '<' || ch == '>' || ch == '+' || ch == '-' || ch == '*' || ch == '|' || ch == '/' || ch == ':' {
 		return xpathToken{typ: xpathTokenOperator, val: string(ch)}
 	}
+
 	return xpathToken{typ: xpathTokenOperator, val: string(ch)}
 }
 
@@ -1825,7 +2032,8 @@ func (l *xpathLexer) readIdentifierOrOperator() xpathToken {
 		if r == utf8.RuneError && size == 1 {
 			break
 		}
-		if !(isXPathIdentRune(r) || r == ':') {
+		// Don't include ':' in identifiers anymore since we tokenize :: as operator
+		if !isXPathIdentRune(r) {
 			break
 		}
 		l.pos += size
