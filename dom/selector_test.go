@@ -4,23 +4,10 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/padraicbc/h5p/internal/common"
 )
 
-type testCase struct {
-	name string
-	run  func(t *testing.T)
-}
-
-func runTestCases(t *testing.T, tests []testCase) {
-	t.Helper()
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
-}
 func nodeWithClass(class string) *Node {
 	doc := &Node{Name: "document"}
 
@@ -269,10 +256,10 @@ func buildSimpleDoc() *Node {
 }
 
 func TestAttributeEqualsSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute equals selector",
-			run: func(t *testing.T) {
+			Name: "attribute equals selector",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 				html := &Node{Name: "html"}
 				body := &Node{Name: "body"}
@@ -295,14 +282,14 @@ func TestAttributeEqualsSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryFirstHonorsCombinators(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "query first honors combinators",
-			run: func(t *testing.T) {
+			Name: "query first honors combinators",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if node, _ := root.QueryFirst("div > span em"); node == nil || node.Name != "em" {
@@ -315,14 +302,14 @@ func TestQueryFirstHonorsCombinators(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMatchesChecksAttributesAndClasses(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "matches checks attributes and classes",
-			run: func(t *testing.T) {
+			Name: "matches checks attributes and classes",
+			Run: func(t *testing.T) {
 				root := buildTree()
 				em, _ := root.QueryFirst("em")
 				if em == nil {
@@ -342,14 +329,14 @@ func TestMatchesChecksAttributesAndClasses(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUniversalSelectorFindsElements(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "universal selector finds elements",
-			run: func(t *testing.T) {
+			Name: "universal selector finds elements",
+			Run: func(t *testing.T) {
 				root := buildTree()
 				nodes, _ := root.Query("div *")
 				if len(nodes) != 3 { // span, em, p
@@ -359,14 +346,14 @@ func TestUniversalSelectorFindsElements(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestTagAndDescendantSelectors(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "tag and descendant selectors",
-			run: func(t *testing.T) {
+			Name: "tag and descendant selectors",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				spanNodes, _ := root.Query("span")
@@ -385,14 +372,14 @@ func TestTagAndDescendantSelectors(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestIDSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "id selector",
-			run: func(t *testing.T) {
+			Name: "id selector",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				nodes, _ := root.Query("#main")
@@ -406,14 +393,14 @@ func TestIDSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestClassSelectorMatchesMultiple(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "class selector matches multiple",
-			run: func(t *testing.T) {
+			Name: "class selector matches multiple",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				nodes, _ := root.Query(".foo")
@@ -424,14 +411,14 @@ func TestClassSelectorMatchesMultiple(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributePresenceSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute presence selector",
-			run: func(t *testing.T) {
+			Name: "attribute presence selector",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				emNodes, _ := root.Query("[data-role]")
@@ -442,14 +429,14 @@ func TestAttributePresenceSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeIncludesSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute includes selector",
-			run: func(t *testing.T) {
+			Name: "attribute includes selector",
+			Run: func(t *testing.T) {
 				root := &Node{Name: "document"}
 				tagged := &Node{Name: "div", Attrs: map[string]*string{"data-tags": strPtr("alpha beta gamma")}}
 				partial := &Node{Name: "div", Attrs: map[string]*string{"data-tags": strPtr("alphabetagamma")}}
@@ -465,14 +452,14 @@ func TestAttributeIncludesSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeDashPrefixSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute dash prefix selector",
-			run: func(t *testing.T) {
+			Name: "attribute dash prefix selector",
+			Run: func(t *testing.T) {
 				root := &Node{Name: "document"}
 				englishUS := &Node{Name: "p", Attrs: map[string]*string{"lang": strPtr("en-US")}}
 				plainEnglish := &Node{Name: "p", Attrs: map[string]*string{"lang": strPtr("en")}}
@@ -490,14 +477,14 @@ func TestAttributeDashPrefixSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeIncludesRequiresWhitespaceList(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute includes requires whitespace list",
-			run: func(t *testing.T) {
+			Name: "attribute includes requires whitespace list",
+			Run: func(t *testing.T) {
 				root := &Node{Name: "document"}
 				hyphenated := &Node{Name: "p", Attrs: map[string]*string{"lang": strPtr("en-US")}}
 				plain := &Node{Name: "p", Attrs: map[string]*string{"lang": strPtr("en")}}
@@ -518,14 +505,14 @@ func TestAttributeIncludesRequiresWhitespaceList(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeValueWithSpaces(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute value with spaces",
-			run: func(t *testing.T) {
+			Name: "attribute value with spaces",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				nodes, _ := root.Query(`div[class="foo bar"]`)
@@ -536,14 +523,14 @@ func TestAttributeValueWithSpaces(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestCompoundSelectorRequiresAllParts(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "compound selector requires all parts",
-			run: func(t *testing.T) {
+			Name: "compound selector requires all parts",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				nodes, _ := root.Query("div#main.foo.bar[data-container=main]")
@@ -554,14 +541,14 @@ func TestCompoundSelectorRequiresAllParts(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestDescendantCombinatorTraversesMultipleLevels(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "descendant combinator traverses multiple levels",
-			run: func(t *testing.T) {
+			Name: "descendant combinator traverses multiple levels",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				nodes, _ := root.Query("div em")
@@ -572,14 +559,14 @@ func TestDescendantCombinatorTraversesMultipleLevels(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestChildCombinatorMatchesDirectChildrenOnly(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "child combinator matches direct children only",
-			run: func(t *testing.T) {
+			Name: "child combinator matches direct children only",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				children, _ := root.Query("div > span")
@@ -594,14 +581,14 @@ func TestChildCombinatorMatchesDirectChildrenOnly(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeSelectorsHandleQuotedAndUnquotedValues(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute selectors handle quoted and unquoted values",
-			run: func(t *testing.T) {
+			Name: "attribute selectors handle quoted and unquoted values",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("em[data-role=label]"); len(nodes) != 1 {
@@ -619,14 +606,14 @@ func TestAttributeSelectorsHandleQuotedAndUnquotedValues(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributePresenceMatchesCaseInsensitiveKeys(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute presence matches case insensitive keys",
-			run: func(t *testing.T) {
+			Name: "attribute presence matches case insensitive keys",
+			Run: func(t *testing.T) {
 				node := &Node{Name: "div", Attrs: map[string]*string{"DATA-Role": strPtr("button")}}
 				root := &Node{Name: "document"}
 				root.AppendChild(node)
@@ -638,14 +625,14 @@ func TestAttributePresenceMatchesCaseInsensitiveKeys(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestClassSelectorRequiresEachClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "class selector requires each class",
-			run: func(t *testing.T) {
+			Name: "class selector requires each class",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query(".foo.bar"); len(nodes) != 2 {
@@ -659,14 +646,14 @@ func TestClassSelectorRequiresEachClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryHandlesNilRootAndEmptySelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "query handles nil root and empty selector",
-			run: func(t *testing.T) {
+			Name: "query handles nil root and empty selector",
+			Run: func(t *testing.T) {
 				var root *Node
 				if nodes, _ := root.Query("div"); nodes != nil {
 					t.Fatalf("nil root should return nil result, got %#v", nodes)
@@ -680,14 +667,14 @@ func TestQueryHandlesNilRootAndEmptySelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestTagSelectorIsCaseInsensitive(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "tag selector is case insensitive",
-			run: func(t *testing.T) {
+			Name: "tag selector is case insensitive",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				nodes, _ := root.Query("DIV")
@@ -698,14 +685,14 @@ func TestTagSelectorIsCaseInsensitive(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestTagSelectorNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "tag selector no match",
-			run: func(t *testing.T) {
+			Name: "tag selector no match",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("article"); len(nodes) != 0 {
@@ -715,14 +702,14 @@ func TestTagSelectorNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestIDSelectorIsCaseSensitive(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "id selector is case sensitive",
-			run: func(t *testing.T) {
+			Name: "id selector is case sensitive",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("#MAIN"); len(nodes) != 0 {
@@ -732,14 +719,14 @@ func TestIDSelectorIsCaseSensitive(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestClassSelectorNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "class selector no match",
-			run: func(t *testing.T) {
+			Name: "class selector no match",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query(".missing"); len(nodes) != 0 {
@@ -749,14 +736,14 @@ func TestClassSelectorNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributePresenceMatchesSpecificKeys(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute presence matches specific keys",
-			run: func(t *testing.T) {
+			Name: "attribute presence matches specific keys",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("[data-container]"); len(nodes) != 1 || nodes[0].Name != "div" {
@@ -766,14 +753,14 @@ func TestAttributePresenceMatchesSpecificKeys(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeExactQuotesAndMismatches(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute exact quotes and mismatches",
-			run: func(t *testing.T) {
+			Name: "attribute exact quotes and mismatches",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("[id='main']"); len(nodes) != 1 || nodes[0].Name != "div" {
@@ -786,14 +773,14 @@ func TestAttributeExactQuotesAndMismatches(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestDescendantSelectorNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "descendant selector no match",
-			run: func(t *testing.T) {
+			Name: "descendant selector no match",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("span div"); len(nodes) != 0 {
@@ -803,14 +790,14 @@ func TestDescendantSelectorNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestChildCombinatorRequiresDirectDescendant(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "child combinator requires direct descendant",
-			run: func(t *testing.T) {
+			Name: "child combinator requires direct descendant",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				if nodes, _ := root.Query("div > em"); len(nodes) != 0 {
@@ -823,14 +810,14 @@ func TestChildCombinatorRequiresDirectDescendant(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryFromSubtreeExcludesSelf(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "query from subtree excludes self",
-			run: func(t *testing.T) {
+			Name: "query from subtree excludes self",
+			Run: func(t *testing.T) {
 				root := buildTree()
 				span, _ := root.QueryFirst("span")
 				if span == nil {
@@ -844,14 +831,14 @@ func TestQueryFromSubtreeExcludesSelf(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestTagSelectorSupportsHyphenatedNames(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "tag selector supports hyphenated names",
-			run: func(t *testing.T) {
+			Name: "tag selector supports hyphenated names",
+			Run: func(t *testing.T) {
 				root := &Node{Name: "document"}
 				custom := &Node{Name: "my-element"}
 				root.AppendChild(custom)
@@ -863,14 +850,14 @@ func TestTagSelectorSupportsHyphenatedNames(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUniversalSelectorMatchesAllElements(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "universal selector matches all elements",
-			run: func(t *testing.T) {
+			Name: "universal selector matches all elements",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 				all, _ := root.Query("*")
 				if len(all) != 14 {
@@ -880,14 +867,14 @@ func TestUniversalSelectorMatchesAllElements(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUniversalSelectorInCompound(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "universal selector in compound",
-			run: func(t *testing.T) {
+			Name: "universal selector in compound",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 				matches, _ := root.Query("*.container")
 				if len(matches) != 2 {
@@ -897,14 +884,14 @@ func TestUniversalSelectorInCompound(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestIDSelectorWithTagAndMismatchedTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "id selector with tag and mismatched tag",
-			run: func(t *testing.T) {
+			Name: "id selector with tag and mismatched tag",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 
 				if nodes, _ := root.Query("div#main"); len(nodes) != 1 {
@@ -917,14 +904,14 @@ func TestIDSelectorWithTagAndMismatchedTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestClassSelectorsWithTags(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "class selectors with tags",
-			run: func(t *testing.T) {
+			Name: "class selectors with tags",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 
 				if nodes, _ := root.Query(".container"); len(nodes) != 2 {
@@ -949,14 +936,14 @@ func TestClassSelectorsWithTags(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributePresenceAcrossDocument(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute presence across document",
-			run: func(t *testing.T) {
+			Name: "attribute presence across document",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 
 				if nodes, _ := root.Query("[href]"); len(nodes) != 1 || nodes[0].Name != "a" {
@@ -972,14 +959,14 @@ func TestAttributePresenceAcrossDocument(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeExactQuotedForms(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute exact quoted forms",
-			run: func(t *testing.T) {
+			Name: "attribute exact quoted forms",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 
 				if nodes, _ := root.Query(`[id="main"]`); len(nodes) != 1 {
@@ -998,14 +985,14 @@ func TestAttributeExactQuotedForms(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestDescendantAndChildCombinators(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "descendant and child combinators",
-			run: func(t *testing.T) {
+			Name: "descendant and child combinators",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 
 				if nodes, _ := root.Query("div p"); len(nodes) != 2 {
@@ -1024,14 +1011,14 @@ func TestDescendantAndChildCombinators(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMatchesWithCombinators(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "matches with combinators",
-			run: func(t *testing.T) {
+			Name: "matches with combinators",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 				intro, _ := root.Query("p.intro")
 				if len(intro) != 1 {
@@ -1048,14 +1035,14 @@ func TestMatchesWithCombinators(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryFromSubtreeInComplexDocument(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "query from subtree in complex document",
-			run: func(t *testing.T) {
+			Name: "query from subtree in complex document",
+			Run: func(t *testing.T) {
 				root := buildSimpleDoc()
 				main, _ := root.Query("#main")
 				if len(main) != 1 {
@@ -1074,15 +1061,15 @@ func TestQueryFromSubtreeInComplexDocument(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Tag selectors ---
 func TestFullTagSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full tag selector",
-			run: func(t *testing.T) {
+			Name: "full tag selector",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("p")
 				if len(result) != 2 {
 					t.Fatalf("expected 2 p elements, got %d", len(result))
@@ -1096,14 +1083,14 @@ func TestFullTagSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullTagSelectorCaseInsensitive(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full tag selector case insensitive",
-			run: func(t *testing.T) {
+			Name: "full tag selector case insensitive",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("P")
 				if got := len(nodes); got != 2 {
 					t.Fatalf("expected 2 P elements, got %d", got)
@@ -1112,14 +1099,14 @@ func TestFullTagSelectorCaseInsensitive(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullTagSelectorDiv(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full tag selector div",
-			run: func(t *testing.T) {
+			Name: "full tag selector div",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("div")
 				if got := len(nodes); got != 2 {
 					t.Fatalf("expected 2 div elements, got %d", got)
@@ -1128,14 +1115,14 @@ func TestFullTagSelectorDiv(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullTagSelectorNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full tag selector no match",
-			run: func(t *testing.T) {
+			Name: "full tag selector no match",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("article")
 				if got := len(nodes); got != 0 {
 					t.Fatalf("expected 0 matches, got %d", got)
@@ -1144,14 +1131,14 @@ func TestFullTagSelectorNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullTagSelectorHeadElements(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full tag selector head elements",
-			run: func(t *testing.T) {
+			Name: "full tag selector head elements",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("title")
 				if len(res) != 1 || res[0].Name != "title" {
 					t.Fatalf("expected to find the title element")
@@ -1160,15 +1147,15 @@ func TestFullTagSelectorHeadElements(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Universal selectors ---
 func TestFullUniversalSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full universal selector",
-			run: func(t *testing.T) {
+			Name: "full universal selector",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("*")
 				if len(res) <= 10 {
 					t.Fatalf("expected many elements matched by *; got %d", len(res))
@@ -1177,14 +1164,14 @@ func TestFullUniversalSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullUniversalInCompound(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full universal in compound",
-			run: func(t *testing.T) {
+			Name: "full universal in compound",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("*.container")
 				if len(res) != 2 {
 					t.Fatalf("expected 2 elements with class container, got %d", len(res))
@@ -1198,15 +1185,15 @@ func TestFullUniversalInCompound(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- ID selectors ---
 func TestFullIDSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full id selector",
-			run: func(t *testing.T) {
+			Name: "full id selector",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("#main")
 				if len(res) != 1 || res[0].Attr("id") != "main" {
 					t.Fatalf("expected to find #main element")
@@ -1215,14 +1202,14 @@ func TestFullIDSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullIDSelectorNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full id selector no match",
-			run: func(t *testing.T) {
+			Name: "full id selector no match",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("#nonexistent")
 				if got := len(nodes); got != 0 {
 					t.Fatalf("expected 0 matches, got %d", got)
@@ -1231,14 +1218,14 @@ func TestFullIDSelectorNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullIDSelectorCaseSensitive(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full id selector case sensitive",
-			run: func(t *testing.T) {
+			Name: "full id selector case sensitive",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("#MAIN")
 				if got := len(nodes); got != 0 {
 					t.Fatalf("expected case sensitive id lookup to fail, got %d", got)
@@ -1247,14 +1234,14 @@ func TestFullIDSelectorCaseSensitive(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullIDWithTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full id with tag",
-			run: func(t *testing.T) {
+			Name: "full id with tag",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("div#main")
 				if got := len(nodes); got != 1 {
 					t.Fatalf("expected 1 div#main, got %d", got)
@@ -1263,14 +1250,14 @@ func TestFullIDWithTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullIDWithWrongTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full id with wrong tag",
-			run: func(t *testing.T) {
+			Name: "full id with wrong tag",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query("span#main")
 				if got := len(nodes); got != 0 {
 					t.Fatalf("expected 0 span#main, got %d", got)
@@ -1279,15 +1266,15 @@ func TestFullIDWithWrongTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Class selectors ---
 func TestFullClassSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full class selector",
-			run: func(t *testing.T) {
+			Name: "full class selector",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query(".container")
 				if got := len(nodes); got != 2 {
 					t.Fatalf("expected 2 .container elements, got %d", got)
@@ -1296,14 +1283,14 @@ func TestFullClassSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullClassSelectorSingle(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full class selector single",
-			run: func(t *testing.T) {
+			Name: "full class selector single",
+			Run: func(t *testing.T) {
 				nodes, _ := buildFullSimpleDoc().Query(".intro")
 				if got := len(nodes); got != 1 {
 					t.Fatalf("expected 1 .intro element, got %d", got)
@@ -1312,14 +1299,14 @@ func TestFullClassSelectorSingle(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullClassSelectorNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full class selector no match",
-			run: func(t *testing.T) {
+			Name: "full class selector no match",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(".nonexistent")
 				if got := len(result); got != 0 {
 					t.Fatalf("expected 0 matches, got %d", got)
@@ -1328,14 +1315,14 @@ func TestFullClassSelectorNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullClassSelectorCaseSensitive(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full class selector case sensitive",
-			run: func(t *testing.T) {
+			Name: "full class selector case sensitive",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(".Container")
 				if got := len(result); got != 0 {
 					t.Fatalf("expected case sensitive class to fail, got %d", got)
@@ -1344,14 +1331,14 @@ func TestFullClassSelectorCaseSensitive(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullMultipleClasses(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full multiple classes",
-			run: func(t *testing.T) {
+			Name: "full multiple classes",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(".intro.first")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 element with both classes, got %d", got)
@@ -1360,14 +1347,14 @@ func TestFullMultipleClasses(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullClassWithTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full class with tag",
-			run: func(t *testing.T) {
+			Name: "full class with tag",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("p.intro")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 p.intro element, got %d", got)
@@ -1376,14 +1363,14 @@ func TestFullClassWithTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullClassWithWrongTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full class with wrong tag",
-			run: func(t *testing.T) {
+			Name: "full class with wrong tag",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("div.intro")
 				if got := len(result); got != 0 {
 					t.Fatalf("expected 0 div.intro, got %d", got)
@@ -1392,15 +1379,15 @@ func TestFullClassWithWrongTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Attribute presence selectors ---
 func TestFullAttributePresence(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute presence",
-			run: func(t *testing.T) {
+			Name: "full attribute presence",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("[href]")
 				if len(res) != 1 || res[0].Name != "a" {
 					t.Fatalf("expected a[href] to find anchor")
@@ -1409,14 +1396,14 @@ func TestFullAttributePresence(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributePresenceID(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute presence id",
-			run: func(t *testing.T) {
+			Name: "full attribute presence id",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("[id]")
 				if got := len(result); got != 2 {
 					t.Fatalf("expected 2 elements with id, got %d", got)
@@ -1425,14 +1412,14 @@ func TestFullAttributePresenceID(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributePresenceData(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute presence data",
-			run: func(t *testing.T) {
+			Name: "full attribute presence data",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("[data-id]")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 data-id element, got %d", got)
@@ -1441,15 +1428,15 @@ func TestFullAttributePresenceData(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Attribute exact match selectors ---
 func TestFullAttributeExact(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute exact",
-			run: func(t *testing.T) {
+			Name: "full attribute exact",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query(`[id="main"]`)
 				if len(res) != 1 || res[0].Attr("id") != "main" {
 					t.Fatalf("expected to find element with id=main")
@@ -1458,14 +1445,14 @@ func TestFullAttributeExact(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeExactNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute exact no match",
-			run: func(t *testing.T) {
+			Name: "full attribute exact no match",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[id="wrong"]`)
 				if got := len(result); got != 0 {
 					t.Fatalf("expected 0 matches, got %d", got)
@@ -1474,14 +1461,14 @@ func TestFullAttributeExactNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeExactUnquoted(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute exact unquoted",
-			run: func(t *testing.T) {
+			Name: "full attribute exact unquoted",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[id=main]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 id=main match, got %d", got)
@@ -1490,14 +1477,14 @@ func TestFullAttributeExactUnquoted(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeExactSingleQuotes(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute exact single quotes",
-			run: func(t *testing.T) {
+			Name: "full attribute exact single quotes",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("[id='main']")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 id=main match, got %d", got)
@@ -1506,15 +1493,15 @@ func TestFullAttributeExactSingleQuotes(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Descendant combinator ---
 func TestFullDescendant(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full descendant",
-			run: func(t *testing.T) {
+			Name: "full descendant",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("div p")
 				if got := len(result); got != 2 {
 					t.Fatalf("expected 2 descendant paragraphs, got %d", got)
@@ -1523,14 +1510,14 @@ func TestFullDescendant(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullDescendantDeep(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full descendant deep",
-			run: func(t *testing.T) {
+			Name: "full descendant deep",
+			Run: func(t *testing.T) {
 				result, _ := buildNestedDoc().Query("div span")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 deep span, got %d", got)
@@ -1539,14 +1526,14 @@ func TestFullDescendantDeep(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullDescendantMultipleLevels(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full descendant multiple levels",
-			run: func(t *testing.T) {
+			Name: "full descendant multiple levels",
+			Run: func(t *testing.T) {
 				res, _ := buildNestedDoc().Query(".a span")
 				if len(res) != 1 || res[0].Attr("id") != "deep" {
 					t.Fatalf("expected to find span#deep under .a")
@@ -1555,14 +1542,14 @@ func TestFullDescendantMultipleLevels(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullDescendantNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full descendant no match",
-			run: func(t *testing.T) {
+			Name: "full descendant no match",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("span div")
 				if got := len(result); got != 0 {
 					t.Fatalf("expected no matches, got %d", got)
@@ -1571,15 +1558,15 @@ func TestFullDescendantNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Child combinator ---
 func TestFullChild(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full child",
-			run: func(t *testing.T) {
+			Name: "full child",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("div > h1")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 child match for div > h1, got %d", got)
@@ -1588,14 +1575,14 @@ func TestFullChild(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullChildDirectOnly(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full child direct only",
-			run: func(t *testing.T) {
+			Name: "full child direct only",
+			Run: func(t *testing.T) {
 				result, _ := buildNestedDoc().Query("body > span")
 				if got := len(result); got != 0 {
 					t.Fatalf("expected no direct span children of body, got %d", got)
@@ -1604,14 +1591,14 @@ func TestFullChildDirectOnly(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullChildWithClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full child with class",
-			run: func(t *testing.T) {
+			Name: "full child with class",
+			Run: func(t *testing.T) {
 				result, _ := buildNestedDoc().Query(".a > .b")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected one .a > .b match, got %d", got)
@@ -1620,15 +1607,15 @@ func TestFullChildWithClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Node query convenience ---
 func TestFullQueryFromDocument(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full query from document",
-			run: func(t *testing.T) {
+			Name: "full query from document",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("p")
 				if got := len(result); got != 2 {
 					t.Fatalf("expected 2 paragraphs from document query, got %d", got)
@@ -1637,14 +1624,14 @@ func TestFullQueryFromDocument(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullQueryFromSubtree(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full query from subtree",
-			run: func(t *testing.T) {
+			Name: "full query from subtree",
+			Run: func(t *testing.T) {
 				main, _ := buildFullSimpleDoc().Query("#main")
 				result, _ := main[0].Query("p")
 				if got := len(result); got != 2 {
@@ -1654,14 +1641,14 @@ func TestFullQueryFromSubtree(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullQueryFromSubtreeLimited(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full query from subtree limited",
-			run: func(t *testing.T) {
+			Name: "full query from subtree limited",
+			Run: func(t *testing.T) {
 				sidebar, _ := buildFullSimpleDoc().Query("#sidebar")
 				result, _ := sidebar[0].Query("p")
 				if got := len(result); got != 0 {
@@ -1671,14 +1658,14 @@ func TestFullQueryFromSubtreeLimited(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullQueryFromSubtreeExcludesSelf(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full query from subtree excludes self",
-			run: func(t *testing.T) {
+			Name: "full query from subtree excludes self",
+			Run: func(t *testing.T) {
 				main, _ := buildFullSimpleDoc().Query("#main")
 				result, _ := main[0].Query("div")
 				if got := len(result); got != 0 {
@@ -1688,15 +1675,15 @@ func TestFullQueryFromSubtreeExcludesSelf(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Matches helper ---
 func TestFullMatchesTrue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full matches true",
-			run: func(t *testing.T) {
+			Name: "full matches true",
+			Run: func(t *testing.T) {
 				div, _ := buildFullSimpleDoc().Query("#main")
 				if !Matches(div[0], "div") || !Matches(div[0], "#main") || !Matches(div[0], ".container") || !Matches(div[0], "div.container") {
 					t.Fatalf("expected div to match multiple selectors")
@@ -1705,14 +1692,14 @@ func TestFullMatchesTrue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullMatchesFalse(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full matches false",
-			run: func(t *testing.T) {
+			Name: "full matches false",
+			Run: func(t *testing.T) {
 				div, _ := buildFullSimpleDoc().Query("#main")
 				if Matches(div[0], "span") || Matches(div[0], "#sidebar") || Matches(div[0], ".other") {
 					t.Fatalf("div should not match unrelated selectors")
@@ -1721,14 +1708,14 @@ func TestFullMatchesFalse(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullMatchesWithCombinator(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full matches with combinator",
-			run: func(t *testing.T) {
+			Name: "full matches with combinator",
+			Run: func(t *testing.T) {
 				p, _ := buildFullSimpleDoc().Query("p.intro")
 				if !Matches(p[0], "div p") || !Matches(p[0], "#main p") {
 					t.Fatalf("expected paragraph to match ancestor selectors")
@@ -1740,15 +1727,15 @@ func TestFullMatchesWithCombinator(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Attribute contains word selectors ---
 func TestFullAttributeContainsWord(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute contains word",
-			run: func(t *testing.T) {
+			Name: "full attribute contains word",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[class~="container"]`)
 				if got := len(result); got != 2 {
 					t.Fatalf("expected 2 container word matches, got %d", got)
@@ -1757,14 +1744,14 @@ func TestFullAttributeContainsWord(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeContainsWordSingle(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute contains word single",
-			run: func(t *testing.T) {
+			Name: "full attribute contains word single",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[class~="secondary"]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 secondary word match, got %d", got)
@@ -1773,14 +1760,14 @@ func TestFullAttributeContainsWordSingle(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeContainsWordNoPartial(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute contains word no partial",
-			run: func(t *testing.T) {
+			Name: "full attribute contains word no partial",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[class~="contain"]`)
 				if got := len(result); got != 0 {
 					t.Fatalf("expected no partial word matches, got %d", got)
@@ -1789,15 +1776,15 @@ func TestFullAttributeContainsWordNoPartial(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Attribute hyphen prefix selectors ---
 func TestFullAttributeHyphenExact(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute hyphen exact",
-			run: func(t *testing.T) {
+			Name: "full attribute hyphen exact",
+			Run: func(t *testing.T) {
 				result, _ := buildLangDoc("en").Query(`[lang|="en"]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 lang hyphen exact match, got %d", got)
@@ -1806,14 +1793,14 @@ func TestFullAttributeHyphenExact(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeHyphenPrefix(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute hyphen prefix",
-			run: func(t *testing.T) {
+			Name: "full attribute hyphen prefix",
+			Run: func(t *testing.T) {
 				result, _ := buildLangDoc("en-US").Query(`[lang|="en"]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected 1 lang hyphen prefix match, got %d", got)
@@ -1822,14 +1809,14 @@ func TestFullAttributeHyphenPrefix(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeHyphenNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute hyphen no match",
-			run: func(t *testing.T) {
+			Name: "full attribute hyphen no match",
+			Run: func(t *testing.T) {
 				result, _ := buildLangDoc("eng").Query(`[lang|="en"]`)
 				if got := len(result); got != 0 {
 					t.Fatalf("expected no hyphen matches, got %d", got)
@@ -1838,15 +1825,15 @@ func TestFullAttributeHyphenNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Attribute starts/ends/contains selectors ---
 func TestFullAttributeStartsWith(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute starts with",
-			run: func(t *testing.T) {
+			Name: "full attribute starts with",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[href^="http"]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected href starting with http, got %d", got)
@@ -1855,14 +1842,14 @@ func TestFullAttributeStartsWith(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeEndsWith(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute ends with",
-			run: func(t *testing.T) {
+			Name: "full attribute ends with",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[href$=".com"]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected href ending with .com, got %d", got)
@@ -1871,14 +1858,14 @@ func TestFullAttributeEndsWith(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAttributeContains(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full attribute contains",
-			run: func(t *testing.T) {
+			Name: "full attribute contains",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query(`[href*="example"]`)
 				if got := len(result); got != 1 {
 					t.Fatalf("expected href containing example, got %d", got)
@@ -1887,15 +1874,15 @@ func TestFullAttributeContains(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Sibling combinators ---
 func TestFullAdjacentSibling(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full adjacent sibling",
-			run: func(t *testing.T) {
+			Name: "full adjacent sibling",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query("h1 + p")
 				if len(res) != 1 || !strings.Contains(res[0].Attr("class"), "first") {
 					t.Fatalf("expected first paragraph adjacent to h1")
@@ -1904,14 +1891,14 @@ func TestFullAdjacentSibling(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAdjacentSiblingChain(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full adjacent sibling chain",
-			run: func(t *testing.T) {
+			Name: "full adjacent sibling chain",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query(".first + p")
 				if len(res) != 1 || !strings.Contains(res[0].Attr("class"), "second") {
 					t.Fatalf("expected second paragraph after .first")
@@ -1920,14 +1907,14 @@ func TestFullAdjacentSiblingChain(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullAdjacentSiblingNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full adjacent sibling no match",
-			run: func(t *testing.T) {
+			Name: "full adjacent sibling no match",
+			Run: func(t *testing.T) {
 				result, _ := buildSiblingDoc().Query(".first + span")
 				if got := len(result); got != 0 {
 					t.Fatalf("expected no match for .first + span, got %d", got)
@@ -1936,14 +1923,14 @@ func TestFullAdjacentSiblingNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullGeneralSibling(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full general sibling",
-			run: func(t *testing.T) {
+			Name: "full general sibling",
+			Run: func(t *testing.T) {
 				result, _ := buildSiblingDoc().Query("h1 ~ p")
 				if got := len(result); got != 4 {
 					t.Fatalf("expected 4 p siblings after h1, got %d", got)
@@ -1952,14 +1939,14 @@ func TestFullGeneralSibling(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAdjacentSiblingDoesNotCascade(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "adjacent sibling does not cascade",
-			run: func(t *testing.T) {
+			Name: "adjacent sibling does not cascade",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				res, _ := doc.Query("li + li")
 				if len(res) != 1 {
@@ -1972,14 +1959,14 @@ func TestAdjacentSiblingDoesNotCascade(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullGeneralSiblingWithClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full general sibling with class",
-			run: func(t *testing.T) {
+			Name: "full general sibling with class",
+			Run: func(t *testing.T) {
 				result, _ := buildSiblingDoc().Query(".first ~ p")
 				if got := len(result); got != 3 {
 					t.Fatalf("expected 3 p siblings after .first, got %d", got)
@@ -1988,15 +1975,15 @@ func TestFullGeneralSiblingWithClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Child position pseudo classes ---
 func TestFullFirstChild(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full first child",
-			run: func(t *testing.T) {
+			Name: "full first child",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("li:first-child")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected first li child, got %d", got)
@@ -2005,14 +1992,14 @@ func TestFullFirstChild(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullFirstChildWithTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full first child with tag",
-			run: func(t *testing.T) {
+			Name: "full first child with tag",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query("div > :first-child")
 				if len(res) != 1 || res[0].Name != "h1" {
 					t.Fatalf("expected h1 as first child of div")
@@ -2021,14 +2008,14 @@ func TestFullFirstChildWithTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullLastChild(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full last child",
-			run: func(t *testing.T) {
+			Name: "full last child",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("li:last-child")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected last li child, got %d", got)
@@ -2037,14 +2024,14 @@ func TestFullLastChild(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullNthChildNumber(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full nth child number",
-			run: func(t *testing.T) {
+			Name: "full nth child number",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("li:nth-child(2)")
 				if len(res) != 1 || !strings.Contains(res[0].Attr("class"), "special") {
 					t.Fatalf("expected second li with class special")
@@ -2053,14 +2040,14 @@ func TestFullNthChildNumber(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChildWhitespaceOnlyArgument(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child whitespace only argument",
-			run: func(t *testing.T) {
+			Name: "nth child whitespace only argument",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -2076,14 +2063,14 @@ func TestNthChildWhitespaceOnlyArgument(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullNthChildOddEven(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full nth child odd even",
-			run: func(t *testing.T) {
+			Name: "full nth child odd even",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("li:nth-child(odd)")
 				if got := len(result); got != 2 {
 					t.Fatalf("expected two odd li children, got %d", got)
@@ -2096,14 +2083,14 @@ func TestFullNthChildOddEven(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullNthChildFormula(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full nth child formula",
-			run: func(t *testing.T) {
+			Name: "full nth child formula",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("li:nth-child(2n+1)")
 				if got := len(result); got != 2 {
 					t.Fatalf("expected nth-child(2n+1) to match 2 nodes, got %d", got)
@@ -2112,14 +2099,14 @@ func TestFullNthChildFormula(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullNotSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full not selector",
-			run: func(t *testing.T) {
+			Name: "full not selector",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query("div:not(#sidebar)")
 				if len(res) != 1 || res[0].Attr("id") != "main" {
 					t.Fatalf("expected to exclude #sidebar div")
@@ -2128,14 +2115,14 @@ func TestFullNotSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullOnlyChild(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full only child",
-			run: func(t *testing.T) {
+			Name: "full only child",
+			Run: func(t *testing.T) {
 				doc := buildLangDoc("")
 				wrapper := &Node{Name: "div"}
 				span := &Node{Name: "span"}
@@ -2151,15 +2138,15 @@ func TestFullOnlyChild(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Empty and root pseudo classes ---
 func TestFullEmpty(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full empty",
-			run: func(t *testing.T) {
+			Name: "full empty",
+			Run: func(t *testing.T) {
 				result, _ := buildEmptyAndRootDoc().Query(".empty:empty")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected empty div to match :empty, got %d", got)
@@ -2168,14 +2155,14 @@ func TestFullEmpty(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullEmptyWhitespace(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full empty whitespace",
-			run: func(t *testing.T) {
+			Name: "full empty whitespace",
+			Run: func(t *testing.T) {
 				result, _ := buildEmptyAndRootDoc().Query(".whitespace:empty")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected whitespace div treated as empty, got %d", got)
@@ -2184,14 +2171,14 @@ func TestFullEmptyWhitespace(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullRoot(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full root",
-			run: func(t *testing.T) {
+			Name: "full root",
+			Run: func(t *testing.T) {
 				res, _ := buildFullSimpleDoc().Query(":root")
 				if len(res) != 1 || res[0].Name != "html" {
 					t.Fatalf("expected html element as :root")
@@ -2200,15 +2187,15 @@ func TestFullRoot(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Type-based pseudo classes ---
 func TestFullFirstOfType(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full first of type",
-			run: func(t *testing.T) {
+			Name: "full first of type",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query("p:first-of-type")
 				if len(res) != 1 || !strings.Contains(res[0].Attr("class"), "first") {
 					t.Fatalf("expected first-of-type p")
@@ -2217,14 +2204,14 @@ func TestFullFirstOfType(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullLastOfType(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full last of type",
-			run: func(t *testing.T) {
+			Name: "full last of type",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query("p:last-of-type")
 				if len(res) != 1 || !strings.Contains(res[0].Attr("class"), "fourth") {
 					t.Fatalf("expected last-of-type p")
@@ -2233,14 +2220,14 @@ func TestFullLastOfType(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullNthOfType(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full nth of type",
-			run: func(t *testing.T) {
+			Name: "full nth of type",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query("p:nth-of-type(2)")
 				if len(res) != 1 || !strings.Contains(res[0].Attr("class"), "second") {
 					t.Fatalf("expected second p as nth-of-type(2)")
@@ -2249,14 +2236,14 @@ func TestFullNthOfType(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullOnlyOfType(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full only of type",
-			run: func(t *testing.T) {
+			Name: "full only of type",
+			Run: func(t *testing.T) {
 				res, _ := buildSiblingDoc().Query("h1:only-of-type")
 				if len(res) != 1 {
 					t.Fatalf("expected single h1 to match only-of-type")
@@ -2265,15 +2252,15 @@ func TestFullOnlyOfType(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Selector groups and complex selectors ---
 func TestFullSelectorGroups(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full selector groups",
-			run: func(t *testing.T) {
+			Name: "full selector groups",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("h1, p, li")
 				if got := len(result); got != 6 {
 					t.Fatalf("expected 6 elements across selector group, got %d", got)
@@ -2282,14 +2269,14 @@ func TestFullSelectorGroups(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullComplexSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full complex selector",
-			run: func(t *testing.T) {
+			Name: "full complex selector",
+			Run: func(t *testing.T) {
 				result, _ := buildFullSimpleDoc().Query("div.container > ul li.special")
 				if got := len(result); got != 1 {
 					t.Fatalf("expected complex selector to match special li, got %d", got)
@@ -2298,15 +2285,15 @@ func TestFullComplexSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Template content ---
 func TestFullTemplateQuery(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full template query",
-			run: func(t *testing.T) {
+			Name: "full template query",
+			Run: func(t *testing.T) {
 				tplContent := &Node{Name: "div", Attrs: map[string]*string{"class": strPtr("inside")}}
 				template := &Node{Name: "template", Template: tplContent}
 				doc := &Node{Name: "document"}
@@ -2324,15 +2311,15 @@ func TestFullTemplateQuery(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // --- Pseudo :contains ---
 func TestFullContainsPseudo(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full contains pseudo",
-			run: func(t *testing.T) {
+			Name: "full contains pseudo",
+			Run: func(t *testing.T) {
 				doc := buildContainsDoc()
 				res, _ := doc.Query(`button:contains("click me")`)
 				if len(res) != 1 || res[0].Name != "button" {
@@ -2342,14 +2329,14 @@ func TestFullContainsPseudo(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestFullContainsDescendants(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "full contains descendants",
-			run: func(t *testing.T) {
+			Name: "full contains descendants",
+			Run: func(t *testing.T) {
 				doc := buildContainsDoc()
 				result, _ := doc.Query(`div:contains("click me")`)
 				ids := make(map[string]struct{})
@@ -2363,14 +2350,14 @@ func TestFullContainsDescendants(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeStartsWithEmptyValue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute starts with empty value",
-			run: func(t *testing.T) {
+			Name: "attribute starts with empty value",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"data-x": "abc"}),
 				)
@@ -2383,14 +2370,14 @@ func TestAttributeStartsWithEmptyValue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeEndsWithEmptyValue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute ends with empty value",
-			run: func(t *testing.T) {
+			Name: "attribute ends with empty value",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"data-x": "abc"}),
 				)
@@ -2403,14 +2390,14 @@ func TestAttributeEndsWithEmptyValue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeContainsEmptyValue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute contains empty value",
-			run: func(t *testing.T) {
+			Name: "attribute contains empty value",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"data-x": "abc"}),
 				)
@@ -2423,14 +2410,14 @@ func TestAttributeContainsEmptyValue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeExactMatchEmptyValue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute exact match empty value",
-			run: func(t *testing.T) {
+			Name: "attribute exact match empty value",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("input", map[string]string{"type": ""}),
 				)
@@ -2443,14 +2430,14 @@ func TestAttributeExactMatchEmptyValue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeHyphenPrefixEmptyValue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute hyphen prefix empty value",
-			run: func(t *testing.T) {
+			Name: "attribute hyphen prefix empty value",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("p", map[string]string{"lang": "en"}),
 				)
@@ -2463,14 +2450,14 @@ func TestAttributeHyphenPrefixEmptyValue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeContainsWordEmptyValue(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute contains word empty value",
-			run: func(t *testing.T) {
+			Name: "attribute contains word empty value",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"class": "a b c"}),
 				)
@@ -2483,14 +2470,14 @@ func TestAttributeContainsWordEmptyValue(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNotEmptyArgumentMatchesAll(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "not empty argument matches all",
-			run: func(t *testing.T) {
+			Name: "not empty argument matches all",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil),
 					el("span", nil),
@@ -2504,14 +2491,14 @@ func TestNotEmptyArgumentMatchesAll(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNotRejectsComplexSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "not rejects complex selector",
-			run: func(t *testing.T) {
+			Name: "not rejects complex selector",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil,
 						el("p", nil),
@@ -2527,14 +2514,14 @@ func TestNotRejectsComplexSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUnicodeClassSelectors(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "unicode class selectors",
-			run: func(t *testing.T) {
+			Name: "unicode class selectors",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{
 						"class": "über 日本語 normal",
@@ -2557,14 +2544,14 @@ func TestUnicodeClassSelectors(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEscapedClassSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escaped class selector",
-			run: func(t *testing.T) {
+			Name: "escaped class selector",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 				html := &Node{Name: "html", Parent: doc}
 				body := &Node{Name: "body", Parent: html}
@@ -2586,14 +2573,14 @@ func TestEscapedClassSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestContainsMissingArgumentErrors(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "contains missing argument errors",
-			run: func(t *testing.T) {
+			Name: "contains missing argument errors",
+			Run: func(t *testing.T) {
 				_, err := parseSelector(`button:contains()`)
 				if err == nil {
 					t.Fatalf(":contains() without argument should error")
@@ -2602,14 +2589,14 @@ func TestContainsMissingArgumentErrors(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNumericEscapeInClassSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "numeric escape in class selector",
-			run: func(t *testing.T) {
+			Name: "numeric escape in class selector",
+			Run: func(t *testing.T) {
 				doc := nodeWithClass("foo:bar")
 				result, _ := doc.Query(`.foo\3A bar`)
 				if len(result) != 1 {
@@ -2619,14 +2606,14 @@ func TestNumericEscapeInClassSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEscapedNewlineInSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escaped newline in selector",
-			run: func(t *testing.T) {
+			Name: "escaped newline in selector",
+			Run: func(t *testing.T) {
 				doc := buildNode(el("div", map[string]string{"class": "foobar"}))
 
 				result, _ := doc.Query(".foo\\\nbar")
@@ -2637,14 +2624,14 @@ func TestEscapedNewlineInSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeStartsWithEmptyValue_Diagnostic(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute starts with empty value_diagnostic",
-			run: func(t *testing.T) {
+			Name: "attribute starts with empty value_diagnostic",
+			Run: func(t *testing.T) {
 				chains, err := parseSelector(`[data-x^=""]`)
 				if err != nil {
 					t.Fatalf("parseSelector errored: %v", err)
@@ -2671,7 +2658,7 @@ func TestAttributeStartsWithEmptyValue_Diagnostic(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func docWithNode(n *Node) *Node {
@@ -2681,10 +2668,10 @@ func docWithNode(n *Node) *Node {
 }
 
 func TestEscapesInsideAttributeSelectorAreLiteral(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escapes inside attribute selector are literal",
-			run: func(t *testing.T) {
+			Name: "escapes inside attribute selector are literal",
+			Run: func(t *testing.T) {
 				val := `foo\ bar`
 				div := &Node{
 					Name: "div",
@@ -2703,14 +2690,14 @@ func TestEscapesInsideAttributeSelectorAreLiteral(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEscapedClassInsideNot(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escaped class inside not",
-			run: func(t *testing.T) {
+			Name: "escaped class inside not",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2728,14 +2715,14 @@ func TestEscapedClassInsideNot(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEscapedCombinatorIsLiteral(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escaped combinator is literal",
-			run: func(t *testing.T) {
+			Name: "escaped combinator is literal",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2753,14 +2740,14 @@ func TestEscapedCombinatorIsLiteral(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMultipleNumericEscapesInClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "multiple numeric escapes in class",
-			run: func(t *testing.T) {
+			Name: "multiple numeric escapes in class",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2778,14 +2765,14 @@ func TestMultipleNumericEscapesInClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestInvalidEscapeSequenceIsLiteral(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "invalid escape sequence is literal",
-			run: func(t *testing.T) {
+			Name: "invalid escape sequence is literal",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2803,14 +2790,14 @@ func TestInvalidEscapeSequenceIsLiteral(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEscapedNewlineCollapsesSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escaped newline collapses selector",
-			run: func(t *testing.T) {
+			Name: "escaped newline collapses selector",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2828,14 +2815,14 @@ func TestEscapedNewlineCollapsesSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUnicodeNumericEscapeInClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "unicode numeric escape in class",
-			run: func(t *testing.T) {
+			Name: "unicode numeric escape in class",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2853,14 +2840,14 @@ func TestUnicodeNumericEscapeInClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEscapedSpaceInClassSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "escaped space in class selector",
-			run: func(t *testing.T) {
+			Name: "escaped space in class selector",
+			Run: func(t *testing.T) {
 				div := &Node{
 					Name: "div",
 					Attrs: map[string]*string{
@@ -2878,14 +2865,14 @@ func TestEscapedSpaceInClassSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestRootDoesNotMatchDocumentNode(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "root does not match document node",
-			run: func(t *testing.T) {
+			Name: "root does not match document node",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 
 				if Matches(doc, ":root") {
@@ -2895,15 +2882,15 @@ func TestRootDoesNotMatchDocumentNode(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Error Handling Tests
 func TestEmptySelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "empty selector",
-			run: func(t *testing.T) {
+			Name: "empty selector",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("")
 				if result != nil {
@@ -2913,14 +2900,14 @@ func TestEmptySelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestWhitespaceOnlySelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "whitespace only selector",
-			run: func(t *testing.T) {
+			Name: "whitespace only selector",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("   ")
 				if result != nil {
@@ -2930,14 +2917,14 @@ func TestWhitespaceOnlySelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUnclosedAttributeBracket(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "unclosed attribute bracket",
-			run: func(t *testing.T) {
+			Name: "unclosed attribute bracket",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("[attr")
 				if err == nil {
 					t.Fatalf("expected error for unclosed attribute bracket")
@@ -2946,14 +2933,14 @@ func TestUnclosedAttributeBracket(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMissingAttributeName(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "missing attribute name",
-			run: func(t *testing.T) {
+			Name: "missing attribute name",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("[]")
 				if err == nil {
 					t.Fatalf("expected error for missing attribute name")
@@ -2962,14 +2949,14 @@ func TestMissingAttributeName(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestUnclosedString(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "unclosed string",
-			run: func(t *testing.T) {
+			Name: "unclosed string",
+			Run: func(t *testing.T) {
 				_, err := parseSelector(`[attr="unclosed]`)
 				if err == nil {
 					t.Fatalf("expected error for unclosed string")
@@ -2978,14 +2965,14 @@ func TestUnclosedString(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMissingPseudoName(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "missing pseudo name",
-			run: func(t *testing.T) {
+			Name: "missing pseudo name",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("div:")
 				if err == nil {
 					t.Fatalf("expected error for missing pseudo name")
@@ -2994,14 +2981,14 @@ func TestMissingPseudoName(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestDanglingCombinator(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "dangling combinator",
-			run: func(t *testing.T) {
+			Name: "dangling combinator",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("div >")
 				if err == nil {
 					t.Fatalf("expected error for dangling combinator")
@@ -3010,14 +2997,14 @@ func TestDanglingCombinator(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestDoubleCombinator(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "double combinator",
-			run: func(t *testing.T) {
+			Name: "double combinator",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("div > > p")
 				if err == nil {
 					t.Fatalf("expected error for double combinator")
@@ -3026,14 +3013,14 @@ func TestDoubleCombinator(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMissingIDName(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "missing id name",
-			run: func(t *testing.T) {
+			Name: "missing id name",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("#")
 				if err == nil {
 					t.Fatalf("expected error for missing ID name")
@@ -3042,14 +3029,14 @@ func TestMissingIDName(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMissingClassName(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "missing class name",
-			run: func(t *testing.T) {
+			Name: "missing class name",
+			Run: func(t *testing.T) {
 				_, err := parseSelector(".")
 				if err == nil {
 					t.Fatalf("expected error for missing class name")
@@ -3058,15 +3045,15 @@ func TestMissingClassName(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Edge Cases Tests
 func TestDeeplyNestedElements(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "deeply nested elements",
-			run: func(t *testing.T) {
+			Name: "deeply nested elements",
+			Run: func(t *testing.T) {
 				// Build 100 levels of nesting
 				doc := &Node{Name: "document"}
 				current := doc
@@ -3086,14 +3073,14 @@ func TestDeeplyNestedElements(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestManySiblings(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "many siblings",
-			run: func(t *testing.T) {
+			Name: "many siblings",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 				html := &Node{Name: "html"}
 				body := &Node{Name: "body"}
@@ -3116,14 +3103,14 @@ func TestManySiblings(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEmptyDocument(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "empty document",
-			run: func(t *testing.T) {
+			Name: "empty document",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 				result, _ := doc.Query("div")
 				if len(result) != 0 {
@@ -3133,14 +3120,14 @@ func TestEmptyDocument(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestSpecialAttributeValuesWithSpaces(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "special attribute values with spaces",
-			run: func(t *testing.T) {
+			Name: "special attribute values with spaces",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 				a := &Node{
 					Name:  "a",
@@ -3156,14 +3143,14 @@ func TestSpecialAttributeValuesWithSpaces(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryOnTextNode(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "query on text node",
-			run: func(t *testing.T) {
+			Name: "query on text node",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				body, _ := doc.Query("body")
 
@@ -3177,14 +3164,14 @@ func TestQueryOnTextNode(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChildZero(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child zero",
-			run: func(t *testing.T) {
+			Name: "nth child zero",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3200,14 +3187,14 @@ func TestNthChildZero(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChildNegative(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child negative",
-			run: func(t *testing.T) {
+			Name: "nth child negative",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3223,14 +3210,14 @@ func TestNthChildNegative(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChildLargeNumber(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child large number",
-			run: func(t *testing.T) {
+			Name: "nth child large number",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3246,14 +3233,14 @@ func TestNthChildLargeNumber(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestClassWithHyphen(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "class with hyphen",
-			run: func(t *testing.T) {
+			Name: "class with hyphen",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"class": "my-class"}),
 				)
@@ -3266,14 +3253,14 @@ func TestClassWithHyphen(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestIDWithHyphen(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "id with hyphen",
-			run: func(t *testing.T) {
+			Name: "id with hyphen",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"id": "my-id"}),
 				)
@@ -3286,15 +3273,15 @@ func TestIDWithHyphen(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Advanced nth-child Tests
 func TestNthChildN(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child n",
-			run: func(t *testing.T) {
+			Name: "nth child n",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3313,14 +3300,14 @@ func TestNthChildN(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChild2N(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child2n",
-			run: func(t *testing.T) {
+			Name: "nth child2n",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3339,14 +3326,14 @@ func TestNthChild2N(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChildNegativeOffset(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child negative offset",
-			run: func(t *testing.T) {
+			Name: "nth child negative offset",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3365,15 +3352,15 @@ func TestNthChildNegativeOffset(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Tokenizer Edge Cases
 func TestAttributeWithSpacesAroundOperator(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute with spaces around operator",
-			run: func(t *testing.T) {
+			Name: "attribute with spaces around operator",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"id": "test"}),
 				)
@@ -3386,14 +3373,14 @@ func TestAttributeWithSpacesAroundOperator(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestCombinatorWithExtraSpaces(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "combinator with extra spaces",
-			run: func(t *testing.T) {
+			Name: "combinator with extra spaces",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil,
 						el("p", nil),
@@ -3408,14 +3395,14 @@ func TestCombinatorWithExtraSpaces(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMultiplePseudoClasses(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "multiple pseudo classes",
-			run: func(t *testing.T) {
+			Name: "multiple pseudo classes",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3430,14 +3417,14 @@ func TestMultiplePseudoClasses(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestPseudoWithArgContainingSpaces(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "pseudo with arg containing spaces",
-			run: func(t *testing.T) {
+			Name: "pseudo with arg containing spaces",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3454,15 +3441,15 @@ func TestPseudoWithArgContainingSpaces(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Matcher Edge Cases
 func TestEmptyPseudoWithComments(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "empty pseudo with comments",
-			run: func(t *testing.T) {
+			Name: "empty pseudo with comments",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil,
 						&Node{Name: "#comment", Data: "comment"},
@@ -3478,14 +3465,14 @@ func TestEmptyPseudoWithComments(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthChildWithInvalidExpression(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth child with invalid expression",
-			run: func(t *testing.T) {
+			Name: "nth child with invalid expression",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("ul", nil,
 						el("li", nil),
@@ -3501,14 +3488,14 @@ func TestNthChildWithInvalidExpression(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthOfTypeWithInvalidExpression(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth of type with invalid expression",
-			run: func(t *testing.T) {
+			Name: "nth of type with invalid expression",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil),
 					el("div", nil),
@@ -3522,14 +3509,14 @@ func TestNthOfTypeWithInvalidExpression(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestOnlyChildNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "only child no match",
-			run: func(t *testing.T) {
+			Name: "only child no match",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("li:only-child")
 				if len(result) != 0 {
@@ -3539,14 +3526,14 @@ func TestOnlyChildNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestOnlyOfTypeNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "only of type no match",
-			run: func(t *testing.T) {
+			Name: "only of type no match",
+			Run: func(t *testing.T) {
 				doc := buildSiblingDoc()
 				result, _ := doc.Query("p:only-of-type")
 				if len(result) != 0 {
@@ -3556,14 +3543,14 @@ func TestOnlyOfTypeNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestLastChildNotLast(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "last child not last",
-			run: func(t *testing.T) {
+			Name: "last child not last",
+			Run: func(t *testing.T) {
 				doc := buildSiblingDoc()
 				result, _ := doc.Query("h1:last-child")
 				if len(result) != 0 {
@@ -3573,14 +3560,14 @@ func TestLastChildNotLast(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestEmptyWithText(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "empty with text",
-			run: func(t *testing.T) {
+			Name: "empty with text",
+			Run: func(t *testing.T) {
 				doc := buildEmptyAndRootDoc()
 				result, _ := doc.Query(".text:empty")
 				if len(result) != 0 {
@@ -3590,14 +3577,14 @@ func TestEmptyWithText(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestRootWithTag(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "root with tag",
-			run: func(t *testing.T) {
+			Name: "root with tag",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("html:root")
 				if len(result) != 1 {
@@ -3607,14 +3594,14 @@ func TestRootWithTag(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNthOfTypeOdd(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "nth of type odd",
-			run: func(t *testing.T) {
+			Name: "nth of type odd",
+			Run: func(t *testing.T) {
 				doc := buildSiblingDoc()
 				result, _ := doc.Query("p:nth-of-type(odd)")
 				if len(result) != 2 {
@@ -3624,15 +3611,15 @@ func TestNthOfTypeOdd(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Selector Groups
 func TestTwoSelectors(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "two selectors",
-			run: func(t *testing.T) {
+			Name: "two selectors",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("h1, h2")
 				if len(result) != 1 || result[0].Name != "h1" {
@@ -3642,14 +3629,14 @@ func TestTwoSelectors(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestComplexSelectorGroups(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "complex selector groups",
-			run: func(t *testing.T) {
+			Name: "complex selector groups",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("#main p, #sidebar a")
 				if len(result) != 3 {
@@ -3659,15 +3646,15 @@ func TestComplexSelectorGroups(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Complex Compound Selectors
 func TestCompoundSelectorWithAttribute(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "compound selector with attribute",
-			run: func(t *testing.T) {
+			Name: "compound selector with attribute",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("a[href][data-id]")
 				if len(result) != 1 {
@@ -3677,14 +3664,14 @@ func TestCompoundSelectorWithAttribute(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestMultipleCombinators(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "multiple combinators",
-			run: func(t *testing.T) {
+			Name: "multiple combinators",
+			Run: func(t *testing.T) {
 				doc := buildNestedDoc()
 				result, _ := doc.Query(".a > .b > .c span")
 				if len(result) != 1 {
@@ -3694,14 +3681,14 @@ func TestMultipleCombinators(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestPseudoWithCombinator(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "pseudo with combinator",
-			run: func(t *testing.T) {
+			Name: "pseudo with combinator",
+			Run: func(t *testing.T) {
 				doc := buildSiblingDoc()
 				result, _ := doc.Query("div > p:first-child")
 				if len(result) != 0 {
@@ -3711,15 +3698,15 @@ func TestPseudoWithCombinator(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Invalid Character Test
 func TestInvalidCharacterInSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "invalid character in selector",
-			run: func(t *testing.T) {
+			Name: "invalid character in selector",
+			Run: func(t *testing.T) {
 				_, err := parseSelector("div@foo")
 				if err == nil {
 					t.Fatalf("expected error for invalid character @")
@@ -3728,15 +3715,15 @@ func TestInvalidCharacterInSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Case Sensitivity Tests
 func TestClassSelectorCaseSensitive(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "class selector case sensitive",
-			run: func(t *testing.T) {
+			Name: "class selector case sensitive",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query(".Container")
 				if len(result) != 0 {
@@ -3746,15 +3733,15 @@ func TestClassSelectorCaseSensitive(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Additional Attribute Tests
 func TestAttributeHyphenPrefixNoMatchWithoutHyphen(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute hyphen prefix no match without hyphen",
-			run: func(t *testing.T) {
+			Name: "attribute hyphen prefix no match without hyphen",
+			Run: func(t *testing.T) {
 				doc := buildLangDoc("english")
 				result, _ := doc.Query(`[lang|="en"]`)
 				if len(result) != 0 {
@@ -3764,14 +3751,14 @@ func TestAttributeHyphenPrefixNoMatchWithoutHyphen(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAttributeContainsWordEmptyClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute contains word empty class",
-			run: func(t *testing.T) {
+			Name: "attribute contains word empty class",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", map[string]string{"class": ""}),
 				)
@@ -3784,15 +3771,15 @@ func TestAttributeContainsWordEmptyClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // First/Last of Type Edge Cases
 func TestFirstOfTypeMultipleTypes(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "first of type multiple types",
-			run: func(t *testing.T) {
+			Name: "first of type multiple types",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil),
 					el("span", nil),
@@ -3807,14 +3794,14 @@ func TestFirstOfTypeMultipleTypes(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestLastOfTypeMultipleTypes(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "last of type multiple types",
-			run: func(t *testing.T) {
+			Name: "last of type multiple types",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil),
 					el("span", nil),
@@ -3829,15 +3816,15 @@ func TestLastOfTypeMultipleTypes(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Not pseudo-class with empty argument
 func TestNotWithClassSelector(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "not with class selector",
-			run: func(t *testing.T) {
+			Name: "not with class selector",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("p:not(.intro)")
 				if len(result) != 1 {
@@ -3850,14 +3837,14 @@ func TestNotWithClassSelector(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestNotWithCombinator(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "not with combinator",
-			run: func(t *testing.T) {
+			Name: "not with combinator",
+			Run: func(t *testing.T) {
 				doc := buildSimpleDoc()
 				result, _ := doc.Query("div > p:not(.content)")
 				if len(result) != 1 {
@@ -3867,15 +3854,15 @@ func TestNotWithCombinator(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Sibling combinator edge cases
 func TestGeneralSiblingNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "general sibling no match",
-			run: func(t *testing.T) {
+			Name: "general sibling no match",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil,
 						el("span", nil),
@@ -3891,14 +3878,14 @@ func TestGeneralSiblingNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestAdjacentSiblingNoMatch(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "adjacent sibling no match",
-			run: func(t *testing.T) {
+			Name: "adjacent sibling no match",
+			Run: func(t *testing.T) {
 				doc := buildNode(
 					el("div", nil,
 						el("h1", nil),
@@ -3915,15 +3902,15 @@ func TestAdjacentSiblingNoMatch(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Universal selector variations
 func TestUniversalSelectorSkipsTextNodes(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "universal selector skips text nodes",
-			run: func(t *testing.T) {
+			Name: "universal selector skips text nodes",
+			Run: func(t *testing.T) {
 				root := buildTree()
 
 				all, _ := root.Query("*")
@@ -3948,15 +3935,15 @@ func TestUniversalSelectorSkipsTextNodes(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Minimal reproduction case
 func TestDebugUnicodeClass(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "debug unicode class",
-			run: func(t *testing.T) {
+			Name: "debug unicode class",
+			Run: func(t *testing.T) {
 				// Helper
 				strPtr := func(s string) *string { return &s }
 
@@ -3984,7 +3971,7 @@ func TestDebugUnicodeClass(t *testing.T) {
 
 				if len(chains) > 0 && len(chains[0]) > 0 {
 					className := chains[0][0].compound.classes[0]
-					fmt.Printf("Parsed class name: %q (bytes: %v)\n", className, []byte(className))
+					fmt.Printf("Parsed class Name: %q (bytes: %v)\n", className, []byte(className))
 				}
 
 				// Test 4: Try to match
@@ -3997,15 +3984,15 @@ func TestDebugUnicodeClass(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Test if the problem is specific to class selectors
 func TestDebugUnicodeAttribute(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "debug unicode attribute",
-			run: func(t *testing.T) {
+			Name: "debug unicode attribute",
+			Run: func(t *testing.T) {
 				strPtr := func(s string) *string { return &s }
 
 				div := &Node{
@@ -4026,15 +4013,15 @@ func TestDebugUnicodeAttribute(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Test the readIdent function directly
 func TestDebugReadIdent(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "debug read ident",
-			run: func(t *testing.T) {
+			Name: "debug read ident",
+			Run: func(t *testing.T) {
 				testCases := []struct {
 					input     string
 					start     int
@@ -4063,5 +4050,5 @@ func TestDebugReadIdent(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }

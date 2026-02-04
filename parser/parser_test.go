@@ -4,12 +4,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/padraicbc/h5p/internal/common"
+
 	"github.com/padraicbc/h5p/dom"
 	"golang.org/x/net/html"
 )
 
 func TestParseAcceptsDifferentInputs(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		input        any
 		opts         []Option
@@ -37,9 +39,10 @@ func TestParseAcceptsDifferentInputs(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.input, tc.opts...)
@@ -54,12 +57,14 @@ func TestParseAcceptsDifferentInputs(t *testing.T) {
 			if tc.wantEncoding != "" && doc.Encoding != tc.wantEncoding {
 				t.Fatalf("Parse encoding = %q, want %q", doc.Encoding, tc.wantEncoding)
 			}
+
 		})
 	}
+
 }
 
 func TestToTextMatchesDomTraversal(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name     string
 		html     string
 		sep      string
@@ -82,9 +87,10 @@ func TestToTextMatchesDomTraversal(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.html)
@@ -95,12 +101,14 @@ func TestToTextMatchesDomTraversal(t *testing.T) {
 			if text := doc.ToText(tc.sep, tc.strip); text != tc.wantText {
 				t.Fatalf("ToText(strip=%v) = %q, want %q", tc.strip, text, tc.wantText)
 			}
+
 		})
 	}
+
 }
 
 func TestQueryHelperUsesSelectorPackage(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html string
 		sel  string
@@ -112,9 +120,10 @@ func TestQueryHelperUsesSelectorPackage(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.html)
@@ -129,12 +138,14 @@ func TestQueryHelperUsesSelectorPackage(t *testing.T) {
 			if matches[0].Name != "span" || matches[0].Attr("class") != "a b" {
 				t.Fatalf("unexpected match %+v", matches[0])
 			}
+
 		})
 	}
+
 }
 
 func TestParseFragmentContextIsAttached(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name    string
 		ctx     *FragmentContext
 		html    string
@@ -148,9 +159,10 @@ func TestParseFragmentContextIsAttached(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.html, WithFragmentContext(tc.ctx))
@@ -177,12 +189,14 @@ func TestParseFragmentContextIsAttached(t *testing.T) {
 			if !foundSpan {
 				t.Fatalf("fragment children did not include parsed span: %+v", wrapper.Children)
 			}
+
 		})
 	}
+
 }
 
 func TestHTPHelpersHandleNilRoot(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		doc  *HTP
 		want string
@@ -195,9 +209,10 @@ func TestHTPHelpersHandleNilRoot(t *testing.T) {
 		{name: "empty doc ToMarkdown", doc: &HTP{}, want: ""},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			switch tc.name {
@@ -216,17 +231,18 @@ func TestHTPHelpersHandleNilRoot(t *testing.T) {
 			default:
 				t.Fatalf("unhandled case %q", tc.name)
 			}
+
 		})
 	}
 
-	queryTests := []struct {
+	queryCases := []struct {
 		name string
 		doc  *HTP
 	}{
 		{name: "nil root Query returns nil", doc: &HTP{}},
 	}
 
-	for _, tc := range queryTests {
+	for _, tc := range queryCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -239,15 +255,16 @@ func TestHTPHelpersHandleNilRoot(t *testing.T) {
 }
 
 func TestAppendChildSetsParent(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "append child sets parent and slice"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			parent := &dom.Node{Name: "div"}
@@ -260,12 +277,14 @@ func TestAppendChildSetsParent(t *testing.T) {
 			if len(parent.Children) != 1 || parent.Children[0] != child {
 				t.Fatalf("unexpected children slice: %+v", parent.Children)
 			}
+
 		})
 	}
+
 }
 
 func TestParseCoversNilAndDefaultTypes(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		in   any
 	}{
@@ -273,9 +292,10 @@ func TestParseCoversNilAndDefaultTypes(t *testing.T) {
 		{name: "numeric default fmt", in: 123},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.in)
@@ -285,18 +305,17 @@ func TestParseCoversNilAndDefaultTypes(t *testing.T) {
 			if doc == nil || doc.Root == nil {
 				t.Fatalf("Parse(%v) returned nil document", tc.in)
 			}
+
 		})
 	}
+
 }
 
 func TestHTPNilRootHelpers(t *testing.T) {
-	tests := []struct {
-		name string
-		run  func(t *testing.T)
-	}{
+	cases := []common.TestCase{
 		{
-			name: "ToHTML on nil root returns empty",
-			run: func(t *testing.T) {
+			Name: "ToHTML on nil root returns empty",
+			Run: func(t *testing.T) {
 				doc := &HTP{}
 				if doc.ToHTML(false, 2) != "" {
 					t.Fatalf("ToHTML on nil root should be empty")
@@ -304,8 +323,8 @@ func TestHTPNilRootHelpers(t *testing.T) {
 			},
 		},
 		{
-			name: "ToText on nil root returns empty",
-			run: func(t *testing.T) {
+			Name: "ToText on nil root returns empty",
+			Run: func(t *testing.T) {
 				doc := &HTP{}
 				if doc.ToText(" ", true) != "" {
 					t.Fatalf("ToText on nil root should be empty")
@@ -313,8 +332,8 @@ func TestHTPNilRootHelpers(t *testing.T) {
 			},
 		},
 		{
-			name: "ToMarkdown on nil root returns empty",
-			run: func(t *testing.T) {
+			Name: "ToMarkdown on nil root returns empty",
+			Run: func(t *testing.T) {
 				doc := &HTP{}
 				if doc.ToMarkdown() != "" {
 					t.Fatalf("ToMarkdown on nil root should be empty")
@@ -322,27 +341,22 @@ func TestHTPNilRootHelpers(t *testing.T) {
 			},
 		},
 	}
+	common.RunTestCases(t, cases)
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
 }
 
 func TestHTPToMarkdown(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html string
 	}{
 		{name: "markdown returns content", html: "<p><strong>bold</strong></p>"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.html)
@@ -352,12 +366,14 @@ func TestHTPToMarkdown(t *testing.T) {
 			if got := doc.ToMarkdown(); got == "" {
 				t.Fatalf("ToMarkdown should return content")
 			}
+
 		})
 	}
+
 }
 
 func TestConvertHTMLNodeCoversNodeTypes(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html string
 	}{
@@ -367,9 +383,10 @@ func TestConvertHTMLNodeCoversNodeTypes(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.html)
@@ -421,41 +438,47 @@ func TestConvertHTMLNodeCoversNodeTypes(t *testing.T) {
 			if !foundDoctype || !foundComment || !foundTemplate || !foundDiv {
 				t.Fatalf("expected doctype=%v comment=%v template=%v div=%v", foundDoctype, foundComment, foundTemplate, foundDiv)
 			}
+
 		})
 	}
+
 }
 
 func TestConvertHTMLNodeUnknownType(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *html.Node
 	}{
 		{name: "unknown node type returns nil", node: &html.Node{Type: html.ErrorNode}},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := convertHTMLNode(tc.node); got != nil {
 				t.Fatalf("expected nil for unknown node type, got %#v", got)
 			}
+
 		})
 	}
+
 }
 
 func TestParseMalformedInput(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html string
 	}{
 		{name: "malformed input still returns document", html: "<div></span>"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc, err := Parse(tc.html)
@@ -465,6 +488,8 @@ func TestParseMalformedInput(t *testing.T) {
 			if doc == nil {
 				t.Fatalf("expected document even with parse issues")
 			}
+
 		})
 	}
+
 }

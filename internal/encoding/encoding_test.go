@@ -3,11 +3,14 @@ package encoding
 import (
 	"bytes"
 	"testing"
+
 	"unicode/utf16"
+
+	"github.com/padraicbc/h5p/internal/common"
 )
 
 func TestDecodeHTMLUsesBOMUTF16LE(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		text         string
 		wantEncoding string
@@ -21,9 +24,10 @@ func TestDecodeHTMLUsesBOMUTF16LE(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			u16 := utf16.Encode([]rune(tc.text))
@@ -39,12 +43,14 @@ func TestDecodeHTMLUsesBOMUTF16LE(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML = %q, want %q", res.HTML, tc.wantHTML)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeHTMLUsesBOMUTF8OverridesTransport(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		text         string
 		transportEnc string
@@ -60,9 +66,10 @@ func TestDecodeHTMLUsesBOMUTF8OverridesTransport(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			data := append([]byte{0xEF, 0xBB, 0xBF}, []byte(tc.text)...)
@@ -74,12 +81,14 @@ func TestDecodeHTMLUsesBOMUTF8OverridesTransport(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML = %q, want %q", res.HTML, tc.wantHTML)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeHTMLUsesUTF16BE(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		text         string
 		wantEncoding string
@@ -93,9 +102,10 @@ func TestDecodeHTMLUsesUTF16BE(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			u16 := utf16.Encode([]rune(tc.text))
@@ -111,12 +121,14 @@ func TestDecodeHTMLUsesUTF16BE(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML = %q, want %q", res.HTML, tc.wantHTML)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeHTMLTransportEncodingNormalized(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		data         []byte
 		transportEnc string
@@ -132,9 +144,10 @@ func TestDecodeHTMLTransportEncodingNormalized(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			res := DecodeHTML(tc.data, tc.transportEnc)
@@ -144,12 +157,14 @@ func TestDecodeHTMLTransportEncodingNormalized(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML = %q, want %q", res.HTML, tc.wantHTML)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeHTMLMetaCharset(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		html         []byte
 		wantEncoding string
@@ -163,9 +178,10 @@ func TestDecodeHTMLMetaCharset(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			res := DecodeHTML(tc.html, "")
@@ -175,12 +191,14 @@ func TestDecodeHTMLMetaCharset(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML mismatch; got %q", res.HTML)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeHTMLMetaContentCharset(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		html         []byte
 		wantEncoding []string
@@ -194,9 +212,10 @@ func TestDecodeHTMLMetaContentCharset(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			res := DecodeHTML(tc.html, "")
@@ -213,12 +232,14 @@ func TestDecodeHTMLMetaContentCharset(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML mismatch; got %q", res.HTML)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeHTMLFallbackWindows1252(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name         string
 		html         []byte
 		wantEncoding string
@@ -232,9 +253,10 @@ func TestDecodeHTMLFallbackWindows1252(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			res := DecodeHTML(tc.html, "")
@@ -244,12 +266,14 @@ func TestDecodeHTMLFallbackWindows1252(t *testing.T) {
 			if res.HTML != tc.wantHTML {
 				t.Fatalf("decoded HTML mismatch; got %q", res.HTML)
 			}
+
 		})
 	}
+
 }
 
 func TestSniffMetaSearchesSubsequentTags(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html []byte
 		want string
@@ -261,20 +285,23 @@ func TestSniffMetaSearchesSubsequentTags(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := sniffMetaEncoding(tc.html); got != tc.want {
 				t.Fatalf("sniffMetaEncoding = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestSniffMetaEmptyAndMalformedTags(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html []byte
 		want string
@@ -291,20 +318,23 @@ func TestSniffMetaEmptyAndMalformedTags(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := sniffMetaEncoding(tc.html); got != tc.want {
 				t.Fatalf("sniffMetaEncoding = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestSniffMetaOffsetReturn(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		html []byte
 		want string
@@ -316,20 +346,23 @@ func TestSniffMetaOffsetReturn(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := sniffMetaEncoding(tc.html); got != tc.want {
 				t.Fatalf("sniffMetaEncoding = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestExtractCharsetContentBranch(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		tag  []byte
 		want string
@@ -341,21 +374,24 @@ func TestExtractCharsetContentBranch(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			tagLower := bytes.ToLower(tc.tag)
 			if got := extractCharset(tc.tag, tagLower); got != tc.want {
 				t.Fatalf("extractCharset = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestExtractCharsetContentValueEmpty(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		tag  []byte
 		want string
@@ -367,21 +403,24 @@ func TestExtractCharsetContentValueEmpty(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			tagLower := bytes.ToLower(tc.tag)
 			if got := extractCharset(tc.tag, tagLower); got != tc.want {
 				t.Fatalf("extractCharset empty content value = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestExtractCharsetDelimiterTrimming(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		tag  []byte
 		want string
@@ -393,21 +432,24 @@ func TestExtractCharsetDelimiterTrimming(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			tagLower := bytes.ToLower(tc.tag)
 			if got := extractCharset(tc.tag, tagLower); got != tc.want {
 				t.Fatalf("extractCharset with delimiter = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestSniffMetaRespects1kLimit(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		pad  int
 		want string
@@ -419,9 +461,10 @@ func TestSniffMetaRespects1kLimit(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			padding := bytes.Repeat([]byte("a"), tc.pad)
@@ -429,12 +472,14 @@ func TestSniffMetaRespects1kLimit(t *testing.T) {
 			if got := sniffMetaEncoding(html); got != tc.want {
 				t.Fatalf("sniffMetaEncoding with late meta = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestNormalizeEncodingLabelVariants(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		in   string
 		want string
@@ -447,20 +492,23 @@ func TestNormalizeEncodingLabelVariants(t *testing.T) {
 		{name: "unknown label empty", in: "unknown-xx", want: ""},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := normalizeEncodingLabel(tc.in); got != tc.want {
 				t.Fatalf("normalizeEncodingLabel(%q) = %q, want %q", tc.in, got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestParseAttrValuePaths(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name   string
 		data   []byte
 		offset int
@@ -492,42 +540,42 @@ func TestParseAttrValuePaths(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if v := parseAttrValue(tc.data, tc.offset); v != tc.want {
 				t.Fatalf("parseAttrValue = %q, want %q", v, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestDecodeUTF16AndWindows1252Helpers(t *testing.T) {
-	tests := []struct {
-		name string
-		run  func(t *testing.T)
-	}{
+	cases := []common.TestCase{
 		{
-			name: "decodeUTF16 short returns empty",
-			run: func(t *testing.T) {
+			Name: "decodeUTF16 short returns empty",
+			Run: func(t *testing.T) {
 				if got := decodeUTF16([]byte{0x00}, true); got != "" {
 					t.Fatalf("decodeUTF16 short = %q, want empty", got)
 				}
 			},
 		},
 		{
-			name: "decodeUTF16 big endian",
-			run: func(t *testing.T) {
+			Name: "decodeUTF16 big endian",
+			Run: func(t *testing.T) {
 				if got := decodeUTF16([]byte{0x00, 0x48, 0x00, 0x69}, false); got != "Hi" {
 					t.Fatalf("decodeUTF16 big endian = %q, want Hi", got)
 				}
 			},
 		},
 		{
-			name: "decodeWindows1252 maps bytes",
-			run: func(t *testing.T) {
+			Name: "decodeWindows1252 maps bytes",
+			Run: func(t *testing.T) {
 				win := decodeWindows1252([]byte{0x80, 0x82, 0xA0})
 				if win != "\u20AC\u201A\u00A0" {
 					t.Fatalf("decodeWindows1252 = %q, want Euro+201A+NBSP", win)
@@ -535,28 +583,22 @@ func TestDecodeUTF16AndWindows1252Helpers(t *testing.T) {
 			},
 		},
 		{
-			name: "windows1252Rune preserves ASCII",
-			run: func(t *testing.T) {
+			Name: "windows1252Rune preserves ASCII",
+			Run: func(t *testing.T) {
 				if r := windows1252Rune(0x7F); r != rune(0x7F) {
 					t.Fatalf("windows1252Rune ASCII = %U, want 0x7F", r)
 				}
 			},
 		},
 		{
-			name: "parseAttrValue lone quote returns empty",
-			run: func(t *testing.T) {
+			Name: "parseAttrValue lone quote returns empty",
+			Run: func(t *testing.T) {
 				if v := parseAttrValue([]byte{'"'}, 0); v != "" {
 					t.Fatalf("parseAttrValue lone quote = %q, want empty", v)
 				}
 			},
 		},
 	}
+	common.RunTestCases(t, cases)
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
 }

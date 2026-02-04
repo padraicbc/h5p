@@ -2,10 +2,12 @@ package dom
 
 import (
 	"testing"
+
+	"github.com/padraicbc/h5p/internal/common"
 )
 
 func TestToHTMLVoidAndAttrs(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name   string
 		node   *Node
 		pretty bool
@@ -27,20 +29,23 @@ func TestToHTMLVoidAndAttrs(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, tc.pretty, tc.indent); got != tc.want {
 				t.Fatalf("ToHTML(img) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLVoidCaseInsensitive(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -57,20 +62,23 @@ func TestToHTMLVoidCaseInsensitive(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 0); got != tc.want {
 				t.Fatalf("ToHTML(IMG) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLPrettyNested(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -91,20 +99,23 @@ func TestToHTMLPrettyNested(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, true, 2); got != tc.want {
 				t.Fatalf("pretty ToHTML(div) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLCompactKeepsText(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -119,20 +130,23 @@ func TestToHTMLCompactKeepsText(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 2); got != tc.want {
 				t.Fatalf("compact ToHTML(div) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLDocumentRoot(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		doc  *Node
 		want string
@@ -151,20 +165,23 @@ func TestToHTMLDocumentRoot(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.doc, true, 2); got != tc.want {
 				t.Fatalf("ToHTML(document) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLDocumentCompact(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		doc  *Node
 		want string
@@ -183,20 +200,23 @@ func TestToHTMLDocumentCompact(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.doc, false, 0); got != tc.want {
 				t.Fatalf("compact document ToHTML = %q", got)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLFragment(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -214,20 +234,23 @@ func TestToHTMLFragment(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 2); got != tc.want {
 				t.Fatalf("ToHTML(fragment) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLFragmentPrettyTrimsWhitespace(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -245,20 +268,23 @@ func TestToHTMLFragmentPrettyTrimsWhitespace(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, true, 2); got != tc.want {
 				t.Fatalf("pretty ToHTML(fragment) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLEscapesText(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -273,79 +299,76 @@ func TestToHTMLEscapesText(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 0); got != tc.want {
 				t.Fatalf("ToHTML escapes text = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestEscapeTextEmptyAndNonVoid(t *testing.T) {
-	tests := []struct {
-		name string
-		run  func(t *testing.T)
-	}{
+	cases := []common.TestCase{
 		{
-			name: "escapeText empty returns empty",
-			run: func(t *testing.T) {
+			Name: "escapeText empty returns empty",
+			Run: func(t *testing.T) {
 				if escapeText("") != "" {
 					t.Fatalf("escapeText on empty should return empty")
 				}
 			},
 		},
 		{
-			name: "div is not void element",
-			run: func(t *testing.T) {
+			Name: "div is not void element",
+			Run: func(t *testing.T) {
 				if isVoidElement("div") {
 					t.Fatalf("div should not be void element")
 				}
 			},
 		},
 		{
-			name: "empty name is not void element",
-			run: func(t *testing.T) {
+			Name: "empty name is not void element",
+			Run: func(t *testing.T) {
 				if isVoidElement("") {
 					t.Fatalf("empty name should not be void element")
 				}
 			},
 		},
 	}
+	common.RunTestCases(t, cases)
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
 }
 
 func TestEscapeAttrValueEmpty(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "escapeAttrValue empty returns empty"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := escapeAttrValue("", '"'); got != "" {
 				t.Fatalf("escapeAttrValue on empty should return empty, got %q", got)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLAttributeQuoting(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -363,20 +386,23 @@ func TestToHTMLAttributeQuoting(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 0); got != tc.want {
 				t.Fatalf("ToHTML attribute quoting = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLAttributeUnquotedAndBoolean(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -395,20 +421,23 @@ func TestToHTMLAttributeUnquotedAndBoolean(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 0); got != tc.want {
 				t.Fatalf("ToHTML attribute variants = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLSortedAttributes(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -427,20 +456,23 @@ func TestToHTMLSortedAttributes(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 0); got != tc.want {
 				t.Fatalf("ToHTML sorted attrs = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLHandlesEmptyAndNil(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -449,20 +481,23 @@ func TestToHTMLHandlesEmptyAndNil(t *testing.T) {
 		{name: "empty document returns empty", node: NewDocument(), want: ""},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, false, 2); got != tc.want {
 				t.Fatalf("ToHTML(%s) = %q, want %q", tc.name, got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLDoctypeAndComments(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -481,20 +516,23 @@ func TestToHTMLDoctypeAndComments(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, true, 0); got != tc.want {
 				t.Fatalf("ToHTML doc with doctype = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToHTMLAllTextPrettyConcats(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		node *Node
 		want string
@@ -512,14 +550,17 @@ func TestToHTMLAllTextPrettyConcats(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := ToHTML(tc.node, true, 2); got != tc.want {
 				t.Fatalf("pretty ToHTML(text run) = %q, want %q", got, tc.want)
 			}
+
 		})
 	}
+
 }

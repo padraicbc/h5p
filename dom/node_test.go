@@ -3,10 +3,12 @@ package dom
 import (
 	"strings"
 	"testing"
+
+	"github.com/padraicbc/h5p/internal/common"
 )
 
 func TestAttrCaseInsensitiveAndNil(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name  string
 		attrs map[string]*string
 		key   string
@@ -32,17 +34,20 @@ func TestAttrCaseInsensitiveAndNil(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			n := &Node{Attrs: tc.attrs}
 			if got := n.Attr(tc.key); got != tc.want {
 				t.Fatalf("Attr(%s) = %q, want %q", tc.key, got, tc.want)
 			}
+
 		})
 	}
+
 }
 
 func TestToTextRespectsSeparatorAndStrip(t *testing.T) {
@@ -52,7 +57,7 @@ func TestToTextRespectsSeparatorAndStrip(t *testing.T) {
 		{Name: "#text", Data: "  ! "},
 	}}
 
-	tests := []struct {
+	cases := []struct {
 		name     string
 		sep      string
 		strip    bool
@@ -72,28 +77,32 @@ func TestToTextRespectsSeparatorAndStrip(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if got := root.ToText(tc.sep, tc.strip); got != tc.wantText {
 				t.Fatalf("ToText(strip=%v) = %q, want %q", tc.strip, got, tc.wantText)
 			}
+
 		})
 	}
+
 }
 
 func TestToMarkdownRendersCommonElements(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "markdown includes headings and lists"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			doc := &Node{Name: "document"}
@@ -144,40 +153,46 @@ func TestToMarkdownRendersCommonElements(t *testing.T) {
 			if !strings.Contains(md, "1. one") || !strings.Contains(md, "2. two") {
 				t.Fatalf("markdown missing ordered list items: %q", md)
 			}
+
 		})
 	}
+
 }
 
 func TestToMarkdownHandlesNilReceiver(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "nil receiver returns empty"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			var n *Node
 			if got := n.ToMarkdown(); got != "" {
 				t.Fatalf("nil receiver ToMarkdown = %q, want empty", got)
 			}
+
 		})
 	}
+
 }
 
 func TestMatchesEmptySelectorPanics(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "empty selector panics"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			defer func() {
@@ -186,20 +201,23 @@ func TestMatchesEmptySelectorPanics(t *testing.T) {
 				}
 			}()
 			Matches(&Node{Name: "div"}, "   ")
+
 		})
 	}
+
 }
 
 func TestMatchChainErrorPropagation(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "unsupported operator returns error"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			node := &Node{Name: "div", Attrs: map[string]*string{"id": strPtr("x")}}
@@ -209,58 +227,57 @@ func TestMatchChainErrorPropagation(t *testing.T) {
 			if ok, err := matchChain(node, chain); err == nil || ok {
 				t.Fatalf("matchChain should bubble unsupported operator error, got ok=%v err=%v", ok, err)
 			}
+
 		})
 	}
+
 }
 
 func TestMatchPseudoUnsupportedAndErrors(t *testing.T) {
-	tests := []struct {
-		name string
-		run  func(t *testing.T)
-	}{
+	cases := []common.TestCase{
 		{
-			name: "unsupported pseudo returns error",
-			run: func(t *testing.T) {
+			Name: "unsupported pseudo returns error",
+			Run: func(t *testing.T) {
 				if _, err := matchPseudo(&Node{Name: "div"}, pseudoSelector{name: "hover"}); err == nil {
 					t.Fatalf("unsupported pseudo should return error")
 				}
 			},
 		},
 		{
-			name: "nth-child without arg errors",
-			run: func(t *testing.T) {
+			Name: "nth-child without arg errors",
+			Run: func(t *testing.T) {
 				if _, err := matchPseudo(&Node{Name: "div"}, pseudoSelector{name: "nth-child"}); err == nil {
 					t.Fatalf("nth-child without arg should error")
 				}
 			},
 		},
 		{
-			name: "nth-of-type without arg errors",
-			run: func(t *testing.T) {
+			Name: "nth-of-type without arg errors",
+			Run: func(t *testing.T) {
 				if _, err := matchPseudo(&Node{Name: "div"}, pseudoSelector{name: "nth-of-type"}); err == nil {
 					t.Fatalf("nth-of-type without arg should error")
 				}
 			},
 		},
 		{
-			name: "contains without arg errors",
-			run: func(t *testing.T) {
+			Name: "contains without arg errors",
+			Run: func(t *testing.T) {
 				if _, err := matchPseudo(&Node{Name: "div"}, pseudoSelector{name: "contains"}); err == nil {
 					t.Fatalf(":contains without arg should error")
 				}
 			},
 		},
 		{
-			name: "not with invalid selector is ignored",
-			run: func(t *testing.T) {
+			Name: "not with invalid selector is ignored",
+			Run: func(t *testing.T) {
 				if ok, err := matchPseudo(&Node{Name: "div"}, pseudoSelector{name: "not", arg: "["}); !ok || err != nil {
 					t.Fatalf(":not with invalid selector should ignore and return true, got %v %v", ok, err)
 				}
 			},
 		},
 		{
-			name: "root does not match non-document nodes",
-			run: func(t *testing.T) {
+			Name: "root does not match non-document nodes",
+			Run: func(t *testing.T) {
 				root := &Node{Name: "div"}
 				root.AppendChild(&Node{Name: "span"})
 				if ok, _ := matchPseudo(root, pseudoSelector{name: "root"}); ok {
@@ -269,8 +286,8 @@ func TestMatchPseudoUnsupportedAndErrors(t *testing.T) {
 			},
 		},
 		{
-			name: "root matches html under document",
-			run: func(t *testing.T) {
+			Name: "root matches html under document",
+			Run: func(t *testing.T) {
 				doc := &Node{Name: "document"}
 				html := &Node{Name: "html"}
 				doc.AppendChild(html)
@@ -280,63 +297,60 @@ func TestMatchPseudoUnsupportedAndErrors(t *testing.T) {
 			},
 		},
 	}
+	common.RunTestCases(t, cases)
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
 }
 
 func TestMatchesNilNodeReturnsFalse(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "nil node returns false"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			if Matches(nil, "div") {
 				t.Fatalf("Matches(nil) should be false")
 			}
+
 		})
 	}
+
 }
 
 func TestSelectorErrorImplementsError(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 	}{
 		{name: "Error returns message"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			err := SelectorError{Msg: "boom"}
 			if err.Error() != "boom" {
 				t.Fatalf("SelectorError.Error = %q, want boom", err.Error())
 			}
+
 		})
 	}
+
 }
 
 func TestAppendChildHandlesNil(t *testing.T) {
-	tests := []struct {
-		name string
-		run  func(t *testing.T)
-	}{
+	cases := []common.TestCase{
 		{
-			name: "append nil child is ignored",
-			run: func(t *testing.T) {
+			Name: "append nil child is ignored",
+			Run: func(t *testing.T) {
 				parent := &Node{Name: "div"}
 				parent.AppendChild(nil)
 				if len(parent.Children) != 0 {
@@ -345,26 +359,20 @@ func TestAppendChildHandlesNil(t *testing.T) {
 			},
 		},
 		{
-			name: "append child to nil parent does not panic",
-			run: func(t *testing.T) {
+			Name: "append child to nil parent does not panic",
+			Run: func(t *testing.T) {
 				var nilParent *Node
 				child := &Node{Name: "span"}
 				nilParent.AppendChild(child)
 			},
 		},
 	}
+	common.RunTestCases(t, cases)
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
 }
 
 func TestAttrMissingReturnsEmpty(t *testing.T) {
-	tests := []struct {
+	cases := []struct {
 		name string
 		key  string
 		want string
@@ -372,35 +380,35 @@ func TestAttrMissingReturnsEmpty(t *testing.T) {
 		{name: "missing attr returns empty", key: "id", want: ""},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			t.Parallel()
 
 			n := &Node{Attrs: map[string]*string{"class": strPtr("foo")}}
 			if got := n.Attr(tc.key); got != tc.want {
 				t.Fatalf("missing attr should be empty, got %q", got)
 			}
+
 		})
 	}
+
 }
 
 func TestPreviousElementSiblingEdges(t *testing.T) {
-	tests := []struct {
-		name string
-		run  func(t *testing.T)
-	}{
+	cases := []common.TestCase{
 		{
-			name: "nil node has nil previous sibling",
-			run: func(t *testing.T) {
+			Name: "nil node has nil previous sibling",
+			Run: func(t *testing.T) {
 				if prev := previousElementSibling(nil); prev != nil {
 					t.Fatalf("nil node previous sibling should be nil")
 				}
 			},
 		},
 		{
-			name: "first child has nil previous sibling",
-			run: func(t *testing.T) {
+			Name: "first child has nil previous sibling",
+			Run: func(t *testing.T) {
 				parent := &Node{Name: "div"}
 				first := &Node{Name: "p"}
 				second := &Node{Name: "span"}
@@ -415,12 +423,6 @@ func TestPreviousElementSiblingEdges(t *testing.T) {
 			},
 		},
 	}
+	common.RunTestCases(t, cases)
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			tc.run(t)
-		})
-	}
 }

@@ -3,13 +3,15 @@ package dom
 import (
 	"math"
 	"testing"
+
+	"github.com/padraicbc/h5p/internal/common"
 )
 
 func TestQueryXPathBasic(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "basic query returns two p nodes",
-			run: func(t *testing.T) {
+			Name: "basic query returns two p nodes",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath("//p")
 				if err != nil {
@@ -22,14 +24,14 @@ func TestQueryXPathBasic(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryXPathAttributeFilters(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "attribute filter for id",
-			run: func(t *testing.T) {
+			Name: "attribute filter for id",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[@id="main"]`)
 				if err != nil {
@@ -41,8 +43,8 @@ func TestQueryXPathAttributeFilters(t *testing.T) {
 			},
 		},
 		{
-			name: "attribute presence filter",
-			run: func(t *testing.T) {
+			Name: "attribute presence filter",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//*[@data-id]`)
 				if err != nil {
@@ -54,8 +56,8 @@ func TestQueryXPathAttributeFilters(t *testing.T) {
 			},
 		},
 		{
-			name: "contains attribute filter",
-			run: func(t *testing.T) {
+			Name: "contains attribute filter",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[contains(@class,"container")]`)
 				if err != nil {
@@ -68,14 +70,14 @@ func TestQueryXPathAttributeFilters(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryXPathPosition(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "position predicate selects second item",
-			run: func(t *testing.T) {
+			Name: "position predicate selects second item",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//ul/li[2]`)
 				if err != nil {
@@ -88,14 +90,14 @@ func TestQueryXPathPosition(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryXPathTextPredicates(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "text equality predicate",
-			run: func(t *testing.T) {
+			Name: "text equality predicate",
+			Run: func(t *testing.T) {
 				doc := buildNode(el("div", nil,
 					&Node{Name: "#text", Data: "hello"},
 					el("span", nil, &Node{Name: "#text", Data: "world"}),
@@ -111,8 +113,8 @@ func TestQueryXPathTextPredicates(t *testing.T) {
 			},
 		},
 		{
-			name: "text contains predicate",
-			run: func(t *testing.T) {
+			Name: "text contains predicate",
+			Run: func(t *testing.T) {
 				doc := buildNode(el("div", nil,
 					&Node{Name: "#text", Data: "hello"},
 					el("span", nil, &Node{Name: "#text", Data: "world"}),
@@ -129,14 +131,14 @@ func TestQueryXPathTextPredicates(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryXPathPrecedingSiblingAxis(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "preceding-sibling axis returns trailing items",
-			run: func(t *testing.T) {
+			Name: "preceding-sibling axis returns trailing items",
+			Run: func(t *testing.T) {
 				doc := buildNode(el("ul", map[string]string{"id": "list"},
 					el("li", map[string]string{"class": "item first"}, &Node{Name: "#text", Data: "One"}),
 					el("li", map[string]string{"class": "item second"}, &Node{Name: "#text", Data: "Two"}),
@@ -156,8 +158,8 @@ func TestQueryXPathPrecedingSiblingAxis(t *testing.T) {
 			},
 		},
 		{
-			name: "preceding-sibling with index selects first",
-			run: func(t *testing.T) {
+			Name: "preceding-sibling with index selects first",
+			Run: func(t *testing.T) {
 				doc := buildNode(el("ul", map[string]string{"id": "list"},
 					el("li", map[string]string{"class": "item first"}, &Node{Name: "#text", Data: "One"}),
 					el("li", map[string]string{"class": "item second"}, &Node{Name: "#text", Data: "Two"}),
@@ -175,14 +177,14 @@ func TestQueryXPathPrecedingSiblingAxis(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryXPathFollowingSiblingAxis(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "following-sibling not() selects last item",
-			run: func(t *testing.T) {
+			Name: "following-sibling not() selects last item",
+			Run: func(t *testing.T) {
 				doc := buildNode(el("div", map[string]string{"id": "siblings"},
 					el("span", nil, &Node{Name: "#text", Data: "A"}),
 					el("span", nil, &Node{Name: "#text", Data: "B"}),
@@ -200,14 +202,14 @@ func TestQueryXPathFollowingSiblingAxis(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestQueryXPathFunctions(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "count() predicate",
-			run: func(t *testing.T) {
+			Name: "count() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[@id="main"][count(p)=2]`)
 				if err != nil {
@@ -219,8 +221,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "starts-with() predicate",
-			run: func(t *testing.T) {
+			Name: "starts-with() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[starts-with(@id,"side")]`)
 				if err != nil {
@@ -232,8 +234,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "substring() predicate",
-			run: func(t *testing.T) {
+			Name: "substring() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[substring(@id,1,4)="side"]`)
 				if err != nil {
@@ -245,8 +247,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "normalize-space() predicate",
-			run: func(t *testing.T) {
+			Name: "normalize-space() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[normalize-space(@class)="container secondary"]`)
 				if err != nil {
@@ -258,8 +260,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "translate() predicate",
-			run: func(t *testing.T) {
+			Name: "translate() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[translate(@id,"main","MAIN")="MAIN"]`)
 				if err != nil {
@@ -271,8 +273,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "boolean() predicate",
-			run: func(t *testing.T) {
+			Name: "boolean() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[boolean(@id)]`)
 				if err != nil {
@@ -284,8 +286,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "not() predicate",
-			run: func(t *testing.T) {
+			Name: "not() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//div[not(@id)]`)
 				if err != nil {
@@ -297,8 +299,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "position() predicate",
-			run: func(t *testing.T) {
+			Name: "position() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//li[position()=2]`)
 				if err != nil {
@@ -310,8 +312,8 @@ func TestQueryXPathFunctions(t *testing.T) {
 			},
 		},
 		{
-			name: "last() predicate",
-			run: func(t *testing.T) {
+			Name: "last() predicate",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				nodes, err := doc.QueryXPath(`//li[last()]`)
 				if err != nil {
@@ -324,14 +326,14 @@ func TestQueryXPathFunctions(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathQueryFirst(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "returns first match",
-			run: func(t *testing.T) {
+			Name: "returns first match",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				node, err := doc.QueryXPathFirst("//div[@id=\"main\"]")
 				if err != nil {
@@ -343,8 +345,8 @@ func TestXPathQueryFirst(t *testing.T) {
 			},
 		},
 		{
-			name: "no match returns nil",
-			run: func(t *testing.T) {
+			Name: "no match returns nil",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				node, err := doc.QueryXPathFirst("//does-not-exist")
 				if err != nil {
@@ -356,8 +358,8 @@ func TestXPathQueryFirst(t *testing.T) {
 			},
 		},
 		{
-			name: "parse errors return error",
-			run: func(t *testing.T) {
+			Name: "parse errors return error",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				if _, err := doc.QueryXPathFirst("["); err == nil {
 					t.Fatalf("QueryXPathFirst should return error on parse errors")
@@ -366,86 +368,86 @@ func TestXPathQueryFirst(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathParseErrors(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "empty selector errors",
-			run: func(t *testing.T) {
+			Name: "empty selector errors",
+			Run: func(t *testing.T) {
 				if _, err := parseXPath(""); err == nil {
 					t.Fatalf("parseXPath should fail on empty selector")
 				}
 			},
 		},
 		{
-			name: "missing node test errors",
-			run: func(t *testing.T) {
+			Name: "missing node test errors",
+			Run: func(t *testing.T) {
 				if _, _, _, err := parseNodeTest("div", 3); err == nil {
 					t.Fatalf("parseNodeTest should fail on missing node test")
 				}
 			},
 		},
 		{
-			name: "dot dot parses",
-			run: func(t *testing.T) {
+			Name: "dot dot parses",
+			Run: func(t *testing.T) {
 				if _, _, _, err := parseNodeTest("..", 0); err != nil {
 					t.Fatalf("parseNodeTest should parse ..")
 				}
 			},
 		},
 		{
-			name: "dot parses",
-			run: func(t *testing.T) {
+			Name: "dot parses",
+			Run: func(t *testing.T) {
 				if _, _, _, err := parseNodeTest(".", 0); err != nil {
 					t.Fatalf("parseNodeTest should parse .")
 				}
 			},
 		},
 		{
-			name: "wildcard parses",
-			run: func(t *testing.T) {
+			Name: "wildcard parses",
+			Run: func(t *testing.T) {
 				if _, _, _, err := parseNodeTest("*", 0); err != nil {
 					t.Fatalf("parseNodeTest should parse *")
 				}
 			},
 		},
 		{
-			name: "unclosed predicate errors",
-			run: func(t *testing.T) {
+			Name: "unclosed predicate errors",
+			Run: func(t *testing.T) {
 				if _, err := parseXPath("div["); err == nil {
 					t.Fatalf("parseXPath should fail on unclosed predicate")
 				}
 			},
 		},
 		{
-			name: "parseXPathStep unclosed predicate errors",
-			run: func(t *testing.T) {
+			Name: "parseXPathStep unclosed predicate errors",
+			Run: func(t *testing.T) {
 				if _, _, err := parseXPathStep("div[", 0, xpathAxisChild); err == nil {
 					t.Fatalf("parseXPathStep should fail on unclosed predicate")
 				}
 			},
 		},
 		{
-			name: "empty predicate errors",
-			run: func(t *testing.T) {
+			Name: "empty predicate errors",
+			Run: func(t *testing.T) {
 				if _, err := parseXPathPredicate(""); err == nil {
 					t.Fatalf("parseXPathPredicate should fail on empty predicate")
 				}
 			},
 		},
 		{
-			name: "extra tokens in predicate errors",
-			run: func(t *testing.T) {
+			Name: "extra tokens in predicate errors",
+			Run: func(t *testing.T) {
 				if _, err := parseXPathPredicate("1,2"); err == nil {
 					t.Fatalf("parseXPathPredicate should fail on extra tokens")
 				}
 			},
 		},
 		{
-			name: "unclosed bracket errors",
-			run: func(t *testing.T) {
+			Name: "unclosed bracket errors",
+			Run: func(t *testing.T) {
 				if _, _, err := readXPathBracket("[", 0); err == nil {
 					t.Fatalf("readXPathBracket should fail on unclosed bracket")
 				}
@@ -453,14 +455,14 @@ func TestXPathParseErrors(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathAxisHelpers(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "axis helpers and node tests",
-			run: func(t *testing.T) {
+			Name: "axis helpers and node tests",
+			Run: func(t *testing.T) {
 				root := &Node{Name: "div"}
 				child := &Node{Name: "span"}
 				text := &Node{Name: "#text", Data: "hello"}
@@ -522,14 +524,14 @@ func TestXPathAxisHelpers(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathValuesAndConversions(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "values and conversions",
-			run: func(t *testing.T) {
+			Name: "values and conversions",
+			Run: func(t *testing.T) {
 				text := &Node{Name: "#text", Data: "hello"}
 				element := &Node{Name: "div", Children: []*Node{text}}
 
@@ -604,14 +606,14 @@ func TestXPathValuesAndConversions(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathExpressionsAndOperators(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "expressions and operators",
-			run: func(t *testing.T) {
+			Name: "expressions and operators",
+			Run: func(t *testing.T) {
 				ctx := xpathContext{node: &Node{Name: "div"}, position: 1, size: 3}
 
 				unary := xpathUnaryExpr{op: "-", expr: xpathLiteralExpr{value: xpathValue{kind: xpathValueNumber, num: 3}}}
@@ -686,14 +688,14 @@ func TestXPathExpressionsAndOperators(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathFunctionsAndErrors(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "functions and errors",
-			run: func(t *testing.T) {
+			Name: "functions and errors",
+			Run: func(t *testing.T) {
 				doc := buildFullSimpleDoc()
 				ctx := xpathContext{root: doc, node: &Node{Name: "div", Children: []*Node{{Name: "#text", Data: "text"}}}, position: 2, size: 5}
 
@@ -940,14 +942,14 @@ func TestXPathFunctionsAndErrors(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathParserInternals(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "parser internals",
-			run: func(t *testing.T) {
+			Name: "parser internals",
+			Run: func(t *testing.T) {
 				parser := newXPathExprParser("1 + 2 * 3")
 				expr, err := parser.parseExpr()
 				if err != nil {
@@ -1008,14 +1010,14 @@ func TestXPathParserInternals(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathLexerCoverage(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "lexer token coverage",
-			run: func(t *testing.T) {
+			Name: "lexer token coverage",
+			Run: func(t *testing.T) {
 				lexer := newXPathLexer("  @id != 10 and name() = 'div'")
 				tok := lexer.nextToken()
 				if tok.typ != xpathTokenAt {
@@ -1068,14 +1070,14 @@ func TestXPathLexerCoverage(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathHelperCoverage(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "helper coverage",
-			run: func(t *testing.T) {
+			Name: "helper coverage",
+			Run: func(t *testing.T) {
 				ctx := xpathContext{node: &Node{Name: "div", Attrs: map[string]*string{"lang": strPtr("en-US")}}}
 
 				if compareXPathValues(
@@ -1181,14 +1183,14 @@ func TestXPathHelperCoverage(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathSubstringEdges(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "substring edge cases",
-			run: func(t *testing.T) {
+			Name: "substring edge cases",
+			Run: func(t *testing.T) {
 				ctx := xpathContext{}
 				val, err := evalSubstring(ctx, []xpathExpr{
 					xpathLiteralExpr{value: xpathValue{kind: xpathValueString, str: "abc"}},
@@ -1239,7 +1241,7 @@ func TestXPathSubstringEdges(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 type errExpr struct{}
@@ -1468,10 +1470,10 @@ func TestAttributes(t *testing.T) {
 
 // Test string functions
 func TestStringFunctions(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "string function predicates",
-			run: func(t *testing.T) {
+			Name: "string function predicates",
+			Run: func(t *testing.T) {
 				root := createTestTree()
 
 				nodes, err := root.QueryXPath("//div[contains(@class, 'item')]")
@@ -1501,7 +1503,7 @@ func TestStringFunctions(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Test error handling
@@ -1534,10 +1536,10 @@ func TestErrorHandling(t *testing.T) {
 
 // Test QueryXPathFirst
 func TestQueryXPathFirst(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "QueryXPathFirst returns first match and nil on no match",
-			run: func(t *testing.T) {
+			Name: "QueryXPathFirst returns first match and nil on no match",
+			Run: func(t *testing.T) {
 				root := createTestTree()
 
 				node, err := root.QueryXPathFirst("//div")
@@ -1562,7 +1564,7 @@ func TestQueryXPathFirst(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Test complex expressions
@@ -1598,10 +1600,10 @@ func TestComplexExpressions(t *testing.T) {
 
 // Test math functions
 func TestMathFunctions(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "modulo position filters odd items",
-			run: func(t *testing.T) {
+			Name: "modulo position filters odd items",
+			Run: func(t *testing.T) {
 				root := createTestTree()
 
 				nodes, err := root.QueryXPath("//li[position() mod 2 = 1]")
@@ -1615,7 +1617,7 @@ func TestMathFunctions(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 // Benchmark basic operations
@@ -1859,10 +1861,10 @@ func TestUnionEdgeCases(t *testing.T) {
 }
 
 func TestUnionDoesNotAffectPredicates(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "union operator does not affect predicates",
-			run: func(t *testing.T) {
+			Name: "union operator does not affect predicates",
+			Run: func(t *testing.T) {
 				root := &Node{
 					Name: "root",
 					Children: []*Node{
@@ -1889,14 +1891,14 @@ func TestUnionDoesNotAffectPredicates(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathLocationPathInFunction(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "location path in function predicates",
-			run: func(t *testing.T) {
+			Name: "location path in function predicates",
+			Run: func(t *testing.T) {
 				root := &Node{
 					Name: "root",
 					Children: []*Node{
@@ -1961,14 +1963,14 @@ func TestXPathLocationPathInFunction(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
 
 func TestXPathLocationChildPathInFunction(t *testing.T) {
-	tests := []testCase{
+	tests := []common.TestCase{
 		{
-			name: "child path in function predicates",
-			run: func(t *testing.T) {
+			Name: "child path in function predicates",
+			Run: func(t *testing.T) {
 				root := &Node{
 					Name: "root",
 					Children: []*Node{
@@ -2068,5 +2070,5 @@ func TestXPathLocationChildPathInFunction(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests)
+	common.RunTestCases(t, tests)
 }
