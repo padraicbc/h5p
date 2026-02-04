@@ -30,7 +30,7 @@ func TestToHTMLVoidAndAttrs(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -63,7 +63,7 @@ func TestToHTMLVoidCaseInsensitive(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -100,7 +100,7 @@ func TestToHTMLPrettyNested(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -131,7 +131,7 @@ func TestToHTMLCompactKeepsText(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -166,7 +166,7 @@ func TestToHTMLDocumentRoot(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -201,7 +201,7 @@ func TestToHTMLDocumentCompact(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -235,7 +235,7 @@ func TestToHTMLFragment(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -269,7 +269,7 @@ func TestToHTMLFragmentPrettyTrimsWhitespace(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -300,7 +300,7 @@ func TestToHTMLEscapesText(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -353,7 +353,7 @@ func TestEscapeAttrValueEmpty(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -387,7 +387,7 @@ func TestToHTMLAttributeQuoting(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -422,7 +422,7 @@ func TestToHTMLAttributeUnquotedAndBoolean(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -457,7 +457,7 @@ func TestToHTMLSortedAttributes(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -482,7 +482,7 @@ func TestToHTMLHandlesEmptyAndNil(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -517,7 +517,7 @@ func TestToHTMLDoctypeAndComments(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -551,7 +551,7 @@ func TestToHTMLAllTextPrettyConcats(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()

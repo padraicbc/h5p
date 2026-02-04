@@ -35,7 +35,7 @@ func TestAttrCaseInsensitiveAndNil(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -78,7 +78,7 @@ func TestToTextRespectsSeparatorAndStrip(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -100,7 +100,7 @@ func TestToMarkdownRendersCommonElements(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -167,7 +167,7 @@ func TestToMarkdownHandlesNilReceiver(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -190,7 +190,7 @@ func TestMatchesEmptySelectorPanics(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -215,7 +215,7 @@ func TestMatchChainErrorPropagation(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -309,7 +309,7 @@ func TestMatchesNilNodeReturnsFalse(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -331,7 +331,7 @@ func TestSelectorErrorImplementsError(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -381,7 +381,7 @@ func TestAttrMissingReturnsEmpty(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()

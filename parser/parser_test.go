@@ -40,7 +40,7 @@ func TestParseAcceptsDifferentInputs(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -88,7 +88,7 @@ func TestToTextMatchesDomTraversal(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -121,7 +121,7 @@ func TestQueryHelperUsesSelectorPackage(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -160,7 +160,7 @@ func TestParseFragmentContextIsAttached(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -210,7 +210,7 @@ func TestHTPHelpersHandleNilRoot(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -243,7 +243,7 @@ func TestHTPHelpersHandleNilRoot(t *testing.T) {
 	}
 
 	for _, tc := range queryCases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -262,7 +262,7 @@ func TestAppendChildSetsParent(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -293,7 +293,7 @@ func TestParseCoversNilAndDefaultTypes(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -354,7 +354,7 @@ func TestHTPToMarkdown(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -384,7 +384,7 @@ func TestConvertHTMLNodeCoversNodeTypes(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -453,7 +453,7 @@ func TestConvertHTMLNodeUnknownType(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -476,7 +476,7 @@ func TestParseMalformedInput(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()

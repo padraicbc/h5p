@@ -54,7 +54,7 @@ func TestSomething(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc // capture range variable
+		 // capture range variable
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel() // where safe
 
@@ -104,6 +104,7 @@ Test case names must describe **observable behaviour**, not implementation detai
 - Pull requests that introduce uncovered code paths will be rejected.
 
 When in doubt:
+
 1. Write the test first.
 2. Then implement the behaviour.
 
@@ -112,6 +113,7 @@ When in doubt:
 ## Spec-Driven Behaviour
 
 Where behaviour is derived from:
+
 - The HTML5 specification
 - Established browser behaviour
 - Known parsing quirks

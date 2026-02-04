@@ -25,7 +25,7 @@ func TestDecodeHTMLUsesBOMUTF16LE(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -67,7 +67,7 @@ func TestDecodeHTMLUsesBOMUTF8OverridesTransport(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -103,7 +103,7 @@ func TestDecodeHTMLUsesUTF16BE(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -145,7 +145,7 @@ func TestDecodeHTMLTransportEncodingNormalized(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -179,7 +179,7 @@ func TestDecodeHTMLMetaCharset(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -213,7 +213,7 @@ func TestDecodeHTMLMetaContentCharset(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -254,7 +254,7 @@ func TestDecodeHTMLFallbackWindows1252(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -286,7 +286,7 @@ func TestSniffMetaSearchesSubsequentTags(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -319,7 +319,7 @@ func TestSniffMetaEmptyAndMalformedTags(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -347,7 +347,7 @@ func TestSniffMetaOffsetReturn(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -375,7 +375,7 @@ func TestExtractCharsetContentBranch(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -404,7 +404,7 @@ func TestExtractCharsetContentValueEmpty(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -433,7 +433,7 @@ func TestExtractCharsetDelimiterTrimming(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -462,7 +462,7 @@ func TestSniffMetaRespects1kLimit(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -493,7 +493,7 @@ func TestNormalizeEncodingLabelVariants(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
@@ -541,7 +541,7 @@ func TestParseAttrValuePaths(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 
 			t.Parallel()
